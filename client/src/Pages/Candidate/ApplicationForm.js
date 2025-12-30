@@ -1,150 +1,139 @@
 import React from 'react'
 import { useState, useEffect } from 'react'
-import { useForm, SubmitHandler } from "react-hook-form"
-import { Link, useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
 
 export const ApplicationForm = () => {
 
     const { id } = useParams();
+    const navigate = useNavigate();
     const [job, setJob] = useState([]);
+    const [loginData, setLoginData] = useState(null);
+    const [hasSubmitted, setHasSubmitted] = useState(false);
 
-    const {
-        register,
-        handleSubmit,
-        formState: { errors },
-    } = useForm({
-        defaultValues: {
-            candidateID: "667336c6ab92f179a717d0ec",
-            jobID: job._id,
-            applicationStatus: "active",
-            applicationForm: [{
-                question: "",
-                answer: ""
-            }],
-            candidateFeedback: [{
-                question: "",
-                answer: ""
-            }]
-        }
-    })
-
-    const [redirect, setRedirect] = useState(false);
-
+    // Load user data from localStorage
     useEffect(() => {
-        if (redirect) {
-            setTimeout(() => {
-                window.location.href = "/";
-            }, 200000);
+        try {
+            const userStr = localStorage.getItem('user');
+            const token = localStorage.getItem('usertoken');
+            
+            if (!userStr || !token) {
+                toast.error('Vui lòng đăng nhập để ứng tuyển');
+                navigate('/login');
+                return;
+            }
+            
+            const user = JSON.parse(userStr);
+            setLoginData(user);
+        } catch (error) {
+            console.error('Error loading user data:', error);
+            toast.error('Lỗi khi tải thông tin người dùng');
+            navigate('/login');
         }
-    }, [redirect]);
+    }, [navigate]);
 
-    const onSubmit = (data) => {
-        const newData = { ...data, jobID: id };
+    const handleSubmit = async () => {
+        if (hasSubmitted) return; // Tránh submit nhiều lần
+        if (!loginData || !loginData._id) return;
+        
+        setHasSubmitted(true);
 
-        // send data to backend API
-        fetch("http://localhost:8080/application/post-application", {
-            method: "POST",
-            headers: { "content-type": "application/json" },
-            body: JSON.stringify(newData),
-        })
-            .then((res) => res.json())
-            .then((result) => {
-                console.log(result);
-                setRedirect(true);
+        const candidateID = loginData._id;
+        const newData = { 
+            jobID: id,
+            candidateID: candidateID,
+            applicationStatus: "active",
+            applicationForm: [],
+            candidateFeedback: []
+        };
+
+        try {
+            // send data to backend API
+            const applicationResponse = await fetch("http://localhost:8080/application/post-application", {
+                method: "POST",
+                headers: { "content-type": "application/json" },
+                body: JSON.stringify(newData),
             });
 
-        fetch("http://localhost:8080/jobs/update-job-by-candidate", {
-            method: "PUT",
-            headers: { "content-type": "application/json" },
-            body: JSON.stringify({
-                jobID: id,
-                candidateID: "667336c6ab92f179a717d0ec",
-                status: "active"                
-            }),
-        })
-            .then((res) => res.json())
-            .then((result) => {
-                // Working fine
-                console.log(result);
-                setRedirect(true);
+            const applicationResult = await applicationResponse.json();
+            
+            if (!applicationResponse.ok) {
+                throw new Error(applicationResult.message || 'Lỗi khi gửi đơn ứng tuyển');
+            }
+
+            // Update job with candidate
+            await fetch("http://localhost:8080/jobs/update-job-by-candidate", {
+                method: "PUT",
+                headers: { "content-type": "application/json" },
+                body: JSON.stringify({
+                    jobID: id,
+                    candidateID: candidateID,
+                    status: "active"                
+                }),
             });
 
-        fetch("http://localhost:8080/users/update-user-by-candidate", {
-            method: "PUT",
-            headers: { "content-type": "application/json" },
-            body: JSON.stringify({
-                jobID: id,
-                candidateID: "667336c6ab92f179a717d0ec",
-                status: "active"                
-            }),
-        })
-            .then((res) => res.json())
-            .then((result) => {
-                // Applications empty
-                console.log(result);
-                setRedirect(true);
+            // Update user with application
+            await fetch("http://localhost:8080/users/update-user-by-candidate", {
+                method: "PUT",
+                headers: { "content-type": "application/json" },
+                body: JSON.stringify({
+                    jobID: id,
+                    candidateID: candidateID,
+                    status: "active"                
+                }),
             });
+
+            toast.success('Đơn ứng tuyển đã được gửi thành công!');
+            
+            // Redirect sau 2 giây
+            setTimeout(() => {
+                navigate('/');
+            }, 2000);
+
+        } catch (error) {
+            console.error('Error submitting application:', error);
+            toast.error(error.message || 'Có lỗi xảy ra khi gửi đơn ứng tuyển');
+            setHasSubmitted(false); // Reset để có thể thử lại
+        }
     };
 
     useEffect(() => {
-        try {
-            fetch(`http://localhost:8080/jobs/current-job/${id}`).then((res) => res.json()).then((data) => setJob(data))
-        } catch (error) {
-            console.log(error);
+        const fetchJob = async () => {
+            try {
+                const response = await fetch(`http://localhost:8080/jobs/current-job/${id}`);
+                const data = await response.json();
+                setJob(data);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        
+        fetchJob();
+    }, [id]);
+
+    // Auto submit khi loginData đã load
+    useEffect(() => {
+        if (hasSubmitted) return;
+        
+        if (loginData && loginData._id && job && job.jobTitle) {
+            handleSubmit();
         }
-    }, []);
+    }, [loginData, job, hasSubmitted]);
 
     return (
         <div className='max-w-scren-2xl w-full md:w-4/6 lg:w-1/2 container mt-2 mx-auto xl:px-24 px-4 '>
             <div className=' bg-[#e7e7e7] mx-auto py-6 px-6 md:px-16 rounded-lg'>
-
-                {/* FORM */}
-                <form onSubmit={handleSubmit(onSubmit)} >
-                    <div className='flex flex-col lg:flex-row  gap-8'>
-
-                        {/* JOB POSTING DETAILS */}
-                        <div className='w-full'>
-                            <div>
-                                <h1 className='text-xl my-1 font-bold text-center'>Đơn ứng tuyển</h1>
-                                <h1 className='text-md mb-2 font-bold text-center text-gray-700'>Vị trí {job.jobTitle}</h1>
-                            </div>
-                            <h1 className='text-sm italic mt-4'>Trả lời các câu hỏi bên dưới để tiếp tục</h1>
-
-                            {/* {job.applicationForm.question.map((question, index) => (
-                                <RenderQuestion key={index} question={question} />
-                            ))} */}
-                            {job.applicationForm && job.applicationForm.question.map((question, index) => (
-                                <RenderQuestion {...register(`applicationForm.${index}.question`)} key={index} index={index} question={question} register={register} />
-
-                            ))}
-
-                        </div>
-
+                <div className='w-full'>
+                    <div>
+                        <h1 className='text-xl my-1 font-bold text-center'>Đơn ứng tuyển</h1>
+                        <h1 className='text-md mb-2 font-bold text-center text-gray-700'>Vị trí {job.jobTitle}</h1>
                     </div>
-
-                    <div className='flex justify-center my-8'>
-                        <button className='submit submit-btn block bg-primary text-white text-md font-medium py-3 px-16 rounded-md hover:opacity-90 transition-opacity shadow-md hover:shadow-lg w-full'>Gửi đơn</button>
+                    
+                    <div className='mt-6 text-center'>
+                        <p className='text-gray-600 mb-4'>Đang gửi đơn ứng tuyển...</p>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
     )
-}
-
-function RenderQuestion({ index, question, register }) {
-    return (
-        <div className='grid grid-cols-1 md:grid-cols-2 items-center pt-2 md:my-0'>
-            <label className='block mt-2 m-1 text-sm' >{index + 1}. {question}</label>
-            <div className='grid grid-cols-2 items-center justify-items-center'>
-                <div className='flex'>
-                    <input {...register(`applicationForm.${index}.answer`, { required: true })} type="radio" value="Yes" className='mx-2' />
-                    <p>Yes</p>
-                </div>
-                <div className='flex'>
-                    <input {...register(`applicationForm.${index}.answer`, { required: true })} type="radio" value="No" className='mx-2' />
-                    <p>No</p>
-                </div>
-            </div>
-        </div>
-    );
 }

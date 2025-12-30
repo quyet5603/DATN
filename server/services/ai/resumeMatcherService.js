@@ -36,7 +36,22 @@ export async function analyzeResume(resumeBuffer, filename, jobDescription) {
     return response.data;
   } catch (error) {
     console.error('Error calling resume matcher service:', error.message);
-    throw new Error(`Resume analysis failed: ${error.message}`);
+    console.error('Error details:', {
+      code: error.code,
+      response: error.response?.data,
+      status: error.response?.status
+    });
+    
+    // Provide more specific error messages
+    if (error.code === 'ECONNREFUSED') {
+      throw new Error('Không thể kết nối đến Python Resume Matcher Service. Vui lòng đảm bảo service đang chạy trên port 5001');
+    } else if (error.code === 'ETIMEDOUT' || error.message.includes('timeout')) {
+      throw new Error('Phân tích CV mất quá nhiều thời gian. Vui lòng thử lại sau');
+    } else if (error.response) {
+      throw new Error(`Resume analysis failed: ${error.response.data?.detail || error.response.statusText || error.message}`);
+    } else {
+      throw new Error(`Resume analysis failed: ${error.message}`);
+    }
   }
 }
 

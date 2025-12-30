@@ -99,7 +99,7 @@ export const RecommendedJobsSection = () => {
                     <div className='text-center mt-6'>
                         <Link
                             to='/recommended-jobs'
-                            className='inline-block bg-primary text-white text-sm font-medium py-2 px-6 rounded-md hover:opacity-90 transition-opacity'
+                            className='inline-block bg-secondary text-white text-sm font-medium py-2 px-6 rounded-md hover:opacity-90 transition-opacity'
                         >
                             Xem tất cả việc làm gợi ý
                         </Link>
@@ -117,7 +117,7 @@ export const RecommendedJobsSection = () => {
                     </ul>
                     <Link
                         to={`/cv-upload/${loginData?._id || ''}`}
-                        className='inline-block bg-primary text-white text-sm font-medium py-2 px-6 rounded-md hover:opacity-90 transition-opacity'
+                        className='inline-block bg-secondary text-white text-sm font-medium py-2 px-6 rounded-md hover:opacity-90 transition-opacity'
                     >
                         Tải CV ngay
                     </Link>
@@ -161,7 +161,7 @@ function RecommendedJobCard({ job }) {
             </div>
             
             <Link to={`/current-job/${job._id}`} className='block w-full'>
-                <button className='w-full bg-primary text-white text-xs font-medium py-2 px-3 rounded-md hover:opacity-90 transition-opacity'>
+                <button className='w-full bg-secondary text-white text-xs font-medium py-2 px-3 rounded-md hover:opacity-90 transition-opacity'>
                     Xem chi tiết
                 </button>
             </Link>

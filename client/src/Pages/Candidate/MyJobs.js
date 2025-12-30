@@ -19,16 +19,35 @@ export const MyJobs = () => {
 
     useEffect(() => {
         const fetchApplications = async () => {
-            if (!loginData?._id) return;
+            if (!loginData?._id) {
+                console.log('No loginData._id found');
+                setLoading(false);
+                return;
+            }
             
             try {
                 setLoading(true);
-                // Fetch applications của user
-                const response = await fetch(`http://localhost:8080/application/all-applications`);
-                const allApplications = await response.json();
+                console.log('Fetching applications for candidateID:', loginData._id);
                 
-                // Filter applications của user này
-                const userApplications = allApplications.filter(app => app.candidateID === loginData._id);
+                // Fetch applications của user - sửa endpoint đúng
+                const response = await fetch(`http://localhost:8080/application/all-application/`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const allApplications = await response.json();
+                console.log('All applications:', allApplications);
+                
+                // Filter applications của user này - so sánh cả string và ObjectId
+                const userApplications = allApplications.filter(app => {
+                    const candidateIdStr = app.candidateID?.toString();
+                    const loginIdStr = loginData._id?.toString();
+                    const match = candidateIdStr === loginIdStr;
+                    if (!match) {
+                        console.log('Mismatch:', { candidateId: candidateIdStr, loginId: loginIdStr });
+                    }
+                    return match;
+                });
+                console.log('Filtered applications:', userApplications);
                 
                 // Fetch job details cho mỗi application
                 const applicationsWithJobs = await Promise.all(
@@ -99,7 +118,6 @@ export const MyJobs = () => {
                                                 <th className={tableHeaderCss}>Vị trí công việc</th>
                                                 <th className={`${tableHeaderCss} hidden md:table-cell`}>Loại</th>
                                                 <th className={`${tableHeaderCss} hidden md:table-cell`}>Địa điểm</th>
-                                                <th className={tableHeaderCss}>Độ phù hợp</th>
                                                 <th className={tableHeaderCss}>Trạng thái</th>
                                             </tr>
                                         </thead>
@@ -107,7 +125,7 @@ export const MyJobs = () => {
                                         <tbody>
                                             {loading ? (
                                                 <tr>
-                                                    <td colSpan="5" className="px-6 py-4 text-center text-gray-500">
+                                                    <td colSpan="4" className="px-6 py-4 text-center text-gray-500">
                                                         Đang tải...
                                                     </td>
                                                 </tr>
@@ -115,7 +133,7 @@ export const MyJobs = () => {
                                                 applications.map((application, key) => <RenderTableRows key={key} application={application} />)
                                             ) : (
                                                 <tr>
-                                                    <td colSpan="5" className="px-6 py-4 text-center text-gray-500">
+                                                    <td colSpan="4" className="px-6 py-4 text-center text-gray-500">
                                                         Chưa có đơn ứng tuyển nào
                                                     </td>
                                                 </tr>
@@ -137,12 +155,6 @@ export const MyJobs = () => {
 function RenderTableRows({application}){
     
     const tableDataCss = "border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"
-    const matchScore = application.matchScore || 0;
-    const getScoreColor = (score) => {
-        if (score >= 80) return 'text-green-600 bg-green-50';
-        if (score >= 60) return 'text-yellow-600 bg-yellow-50';
-        return 'text-red-600 bg-red-50';
-    };
 
     const getStatusText = (status) => {
         const statusMap = {
@@ -166,17 +178,6 @@ function RenderTableRows({application}){
             </td>
             <td className={`${tableDataCss} hidden md:table-cell`}>
                 {application.location}
-            </td>
-            <td className={tableDataCss}>
-                {matchScore > 0 ? (
-                    <div className="flex items-center gap-2">
-                        <span className={`px-2 py-1 rounded font-semibold ${getScoreColor(matchScore)}`}>
-                            {matchScore}%
-                        </span>
-                    </div>
-                ) : (
-                    <span className="text-gray-400">-</span>
-                )}
             </td>
             <td className={`${tableDataCss} font-bold hidden md:table-cell`}>
                 {getStatusText(application.applicationStatus)}

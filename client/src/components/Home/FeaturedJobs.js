@@ -1,7 +1,7 @@
 import React from 'react'
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import logoURL from '../../assets/img/logo.jpeg'
+import logoURL from '../../assets/img/logo.png'
 
 export const FeaturedJobs = () => {
 
@@ -15,7 +15,7 @@ export const FeaturedJobs = () => {
     }, []);
 
     return (
-        <div className='max-w-screen-2xl container mx-auto px-4 py-12'>
+        <div id="featured-jobs" className='max-w-screen-2xl container mx-auto px-4 py-12'>
             <h1 className='text-center text-2xl md:text-3xl font-bold text-primary mb-8'>Việc làm nổi bật</h1>
             {jobs.length > 0 ? (
                 <div className='w-full grid sm:grid-cols-2 md:grid-cols-3 gap-6'>
@@ -57,7 +57,7 @@ function Card({ job }) {
                     <span className='text-xs ml-1'>{job.location}</span>
                 </div>
                 <Link to={`/current-job/${job._id}`}>
-                    <button className='bg-primary text-white text-sm font-medium py-2 px-4 rounded-md hover:opacity-90 transition-opacity shadow-sm hover:shadow-md'>Ứng tuyển</button>
+                    <button className='bg-secondary text-white text-sm font-medium py-2 px-4 rounded-md hover:opacity-90 transition-opacity shadow-sm hover:shadow-md'>Ứng tuyển</button>
                 </Link>
             </div>
         </div>

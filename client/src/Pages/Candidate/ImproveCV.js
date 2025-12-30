@@ -87,7 +87,7 @@ export const ImproveCV = () => {
           </p>
           <button
             onClick={fetchImprovements}
-            className='bg-primary text-white py-2 px-6 rounded-md hover:opacity-90 transition-opacity'
+            className='bg-secondary text-white py-2 px-6 rounded-md hover:opacity-90 transition-opacity'
           >
             Bắt đầu phân tích
           </button>
@@ -189,7 +189,7 @@ export const ImproveCV = () => {
         <div className='mt-8 pt-6 border-t border-gray-200 flex gap-4'>
           <Link
             to={`/cv-upload/${jobId}`}
-            className='bg-primary text-white py-2 px-6 rounded-md hover:opacity-90 transition-opacity'
+            className='bg-secondary text-white py-2 px-6 rounded-md hover:opacity-90 transition-opacity'
           >
             Tải CV mới sau khi cải thiện
           </Link>

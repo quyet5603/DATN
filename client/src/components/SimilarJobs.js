@@ -1,7 +1,7 @@
 import React from 'react'
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import logoURL from '../assets/img/logo.jpeg'
+import logoURL from '../assets/img/logo.png'
 
 export const SimilarJobs = () => {
 
@@ -52,7 +52,7 @@ function Card({ job }) {
                     <span className='text-xs ml-1'>{job.location}</span>
                 </div>
                 <Link to={`/current-job/${job._id}`}>
-                    <button className='bg-primary text-white text-sm font-medium py-2 px-4 rounded-md hover:opacity-90 transition-opacity shadow-sm hover:shadow-md'>Ứng tuyển</button>
+                    <button className='bg-secondary text-white text-sm font-medium py-2 px-4 rounded-md hover:opacity-90 transition-opacity shadow-sm hover:shadow-md'>Ứng tuyển</button>
                 </Link>
             </div>
         </div>

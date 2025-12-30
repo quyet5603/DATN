@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
+import { Link } from 'react-router-dom';
 import { LoginContext } from '../../components/ContextProvider/Context';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { StatsCard } from '../../components/Dashboard/StatsCard';
@@ -33,7 +34,12 @@ export const AnalyticsDashboard = () => {
           const data = await response.json();
           if (data.success) {
             setStats(data.stats);
+          } else {
+            console.error('API returned error:', data);
           }
+        } else {
+          const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+          console.error('API error:', response.status, errorData);
         }
       } catch (error) {
         console.error('Error fetching stats:', error);
@@ -61,8 +67,18 @@ export const AnalyticsDashboard = () => {
   if (!stats) {
     return (
       <div className='max-w-screen-2xl container mx-auto xl:px-24 px-4 py-10'>
-        <div className='text-center py-10 text-gray-600'>
-          Không có dữ liệu thống kê
+        <div className='text-center py-10'>
+          <h2 className='text-2xl font-bold mb-4 text-gray-800'>Dashboard Thống Kê</h2>
+          <div className='bg-white p-8 rounded-lg shadow-md max-w-2xl mx-auto'>
+            <p className='text-gray-600 mb-4'>Chưa có dữ liệu thống kê để hiển thị.</p>
+            <p className='text-sm text-gray-500 mb-4'>
+              Để xem thống kê, bạn cần:
+            </p>
+            <ul className='text-left text-sm text-gray-600 space-y-2 max-w-md mx-auto'>
+              <li>• Đăng ít nhất một công việc</li>
+              <li>• Có ứng viên ứng tuyển vào các công việc của bạn</li>
+            </ul>
+          </div>
         </div>
       </div>
     );
@@ -175,11 +191,19 @@ export const AnalyticsDashboard = () => {
           <div className='space-y-3'>
             {stats.topJobs.map((job, index) => (
               <div key={index} className='flex items-center justify-between p-3 bg-gray-50 rounded-lg'>
-                <div>
+                <div className='flex-1'>
                   <h4 className='font-semibold text-gray-800'>{job.jobTitle}</h4>
                   <p className='text-sm text-gray-600'>{job.applicationsCount} đơn ứng tuyển</p>
                 </div>
-                <div className='text-2xl font-bold text-blue-600'>#{index + 1}</div>
+                <div className='flex items-center gap-4'>
+                  <Link 
+                    to={`/matched-candidates/${job.jobId || job._id}`}
+                    className='bg-secondary text-white px-4 py-2 rounded-md hover:opacity-90 transition-opacity text-sm font-medium'
+                  >
+                    Xem ứng viên
+                  </Link>
+                  <div className='text-2xl font-bold text-blue-600'>#{index + 1}</div>
+                </div>
               </div>
             ))}
           </div>

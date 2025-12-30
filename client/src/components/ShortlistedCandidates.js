@@ -86,11 +86,29 @@ export const ShortlistedCandidates = () => {
                                         </thead>
 
                                         <tbody>
-                                            {shortlistCandidate && jobs && shortlistApplication?
-                                             shortlistCandidate.map((candidate, key) => <RenderTableRows job={jobs} key={key} candidate={candidate} />)
-                                                :
-                                                <p>Không tìm thấy ứng viên nào được chọn</p>
-                                            }
+                                            {shortlistCandidate && jobs && shortlistApplication && shortlistCandidate.length > 0 ? (
+                                                shortlistCandidate.map((candidate, key) => {
+                                                    // Tìm application của candidate này
+                                                    const application = shortlistApplication.find(app => app.candidateID === candidate._id);
+                                                    // Tìm job của application này
+                                                    const job = application ? jobs.find(j => j._id === application.jobID) : null;
+                                                    
+                                                    return (
+                                                        <RenderTableRows 
+                                                            key={candidate._id || key} 
+                                                            candidate={candidate} 
+                                                            job={job}
+                                                            application={application}
+                                                        />
+                                                    );
+                                                })
+                                            ) : (
+                                                <tr>
+                                                    <td colSpan="4" className="px-6 py-8 text-center text-gray-500">
+                                                        Không tìm thấy ứng viên nào được chọn
+                                                    </td>
+                                                </tr>
+                                            )}
                                         </tbody>
 
                                     </table>
@@ -105,27 +123,36 @@ export const ShortlistedCandidates = () => {
     )
 }
 
-function RenderTableRows({candidate, job}){
-    console.log("called");
-    console.log(job);
+function RenderTableRows({candidate, job, application}){
     const tableDataCss = "border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"
+    
+    // Kiểm tra dữ liệu hợp lệ
+    if (!candidate || !candidate._id) {
+        return null;
+    }
+    
+    // Nếu không có job, vẫn hiển thị candidate nhưng không có link chi tiết
+    const jobId = job?._id || application?.jobID || '';
+    
     return (
-        
-        candidate && 
         <tr>
             <th className= {`${tableDataCss} text-left text-blueGray-700 px-3 md:px-6`}>
-                {candidate.userName}
+                {candidate.userName || 'N/A'}
             </th>
             <td className={`${tableDataCss} hidden md:table-cell`}>
-                {candidate.userEmail}
+                {candidate.userEmail || 'N/A'}
             </td>
             <td className={`${tableDataCss} hidden md:table-cell`}>
                 Đã được chọn
             </td>
             <td className={`flex justify-between ${tableDataCss}`}>
-                <Link to={`/shortlist/details/${candidate._id}/${job[0]._id}`}>
-                    <button className='block bg-primary text-white mx-auto text-md py-2  px-2 md:px-6 rounded-md'>Chi tiết</button>
-                </Link>
+                {jobId ? (
+                    <Link to={`/shortlist/details/${candidate._id}/${jobId}`}>
+                        <button className='block bg-secondary text-white mx-auto text-md py-2 px-2 md:px-6 rounded-md hover:opacity-90 transition-opacity'>Chi tiết</button>
+                    </Link>
+                ) : (
+                    <span className='text-gray-400 text-sm'>Không có thông tin job</span>
+                )}
             </td>
         </tr>
     )

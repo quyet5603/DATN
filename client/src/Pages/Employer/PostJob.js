@@ -1,5 +1,4 @@
 import React from 'react'
-import { useState } from 'react'
 import { useForm, SubmitHandler } from "react-hook-form"
 import { toast } from 'react-toastify'
 
@@ -16,21 +15,20 @@ export const PostJob = () => {
             employmentType: "",
             location: "",
             salary: "",
-            description: "",
-            applicationForm: {
-                question: [""],
-                answer: [""]
-            }
-            
+            description: ""
         }
     })
 
     const onSubmit = (data) =>{ 
         console.log(data)
+        const token = localStorage.getItem('usertoken');
         // send data to backend API
         fetch("http://localhost:8080/jobs/post-job", {
             method: "POST",
-            headers: {'content-type' : 'application/json'},
+            headers: {
+                'content-type' : 'application/json',
+                'Authorization': token ? (token.startsWith('Bearer') ? token : `Bearer ${token}`) : ''
+            },
             body: JSON.stringify(data)
         })
         .then((res) => res.json())
@@ -46,93 +44,88 @@ export const PostJob = () => {
 
     }
 
-    // DYNAMIC CANDIDATE FORM QUESTION
-    const [questions, setQuestions] = useState([{ question: '', answer: '' }]);
-    const [questionSize, setQuestionSize] = useState(0);
-    const addQuestion = () => {
-        setQuestionSize(questionSize+1);
-        setQuestions([...questions, { question: '', answer: '' }]);
-    };
-    const handleDeleteQuestion = (index) => {
-        const newQuestions = questions.filter((_, qIndex) => qIndex !== index);
-        setQuestions(newQuestions);
-        setQuestionSize(questionSize-1);
-    };
 
 
     return (
-        <div className='max-w-scren-2xl container mt-2 mx-auto xl:px-24 px-4 '>
-            <div className='bg-[#e7e7e7] py-6 px-4 lg:px-16 rounded-lg'>
+        <div className='max-w-screen-2xl container mt-2 mx-auto xl:px-24 px-4 py-8'>
+            <div className='bg-[#e7e7e7] py-8 px-4 lg:px-16 rounded-lg max-w-3xl mx-auto'>
 
                 {/* FORM */}
                 <form onSubmit={handleSubmit(onSubmit)} >
-                    <div className='flex flex-col lg:flex-row  gap-8'>
-
-                        {/* JOB POSTING DETAILS */}
-                        <div className='lg:w-1/2 w-full'>
-                            <div><h1 className='text-xl font-bold text-center'>Chi tiết công việc</h1></div>
-                            <div>
-                                <label className='block m-1 text-md'>Tiêu đề công việc</label>
-                                <input type='text' required {...register("jobTitle")} placeholder='VD: Lập trình viên Full Stack' className='create-job-input placeholder:text-xs md:placeholder:text-sm'></input>
-                            </div>
-                            <div>
-                                <label className='block m-1 text-md'>Loại việc làm</label>
-                                <input type='text' required {...register("employmentType")} placeholder='VD: Thực tập, Bán thời gian, Toàn thời gian' className='create-job-input placeholder:text-xs md:placeholder:text-sm'></input>
-                            </div>
-                            <div>
-                                <label className='block m-1 text-md'>Địa điểm</label>
-                                <input type='text' required {...register("location")} placeholder='VD: Hà Nội' className='create-job-input placeholder:text-xs md:placeholder:text-sm'></input>
-                            </div>
-                            <div>
-                                <label className='block m-1 text-md'>Mức lương dự kiến <span className='text-sm'>(triệu/tháng)</span></label>
-                                <input type='text' required {...register("salary")} placeholder='VD: 20' className='create-job-input placeholder:text-xs md:placeholder:text-sm'></input>
-                            </div>
-                            <div>
-                                <label className='block m-1 text-md'>Mô tả công việc</label>
-                                <textarea className='create-job-input placeholder:text-xs md:placeholder:text-sm' rows={4} placeholder='Mô tả công việc và yêu cầu' required {...register("description")} />
-                            </div>
+                    {/* JOB POSTING DETAILS */}
+                    <div className='w-full'>
+                        <div className='mb-6'>
+                            <h1 className='text-2xl md:text-3xl font-bold text-center text-primary'>Chi tiết công việc</h1>
                         </div>
-
-                        {/* CANDIDATE FORM */}
-                        <div className='lg:w-1/2 w-full'>
-                            <div><h1 className='text-xl font-bold text-center'>Biểu mẫu ứng viên</h1></div>
-
-
-
-                            {/* DYNAMIC BLOCK */}
+                        
+                        <div className='space-y-4'>
                             <div>
-                                {questions.map((question, index) => (
-
-                                    <div key={index}>
-                                            <label className='block m-1 text-md'>Câu hỏi {`${index+1}`}</label>
-                                            <div className='mb-2 text-lg grid grid-cols-1 md:grid-cols-2'>
-                                                <input type='text' required {...register(`applicationForm.question.${index}`)} placeholder={`Câu hỏi ${index + 1}`} className=' create-job-input placeholder:text-xs md:placeholder:text-sm' ></input>
-
-                                                <div className='grid grid-cols-3 items-center justify-items-center my-2 md:my-0 ' >
-                                                    <div className='flex'>
-                                                        <input {...register(`applicationForm.answer.${index}`, { required: true })} type="radio" value="Yes" className='mx-2' />
-                                                        <p>Yes</p>
-                                                    </div>
-                                                    <div className='flex'>
-                                                        <input {...register(`applicationForm.answer.${index}`, { required: true })} type="radio" value="No" className='mx-2' />
-                                                        <p>No</p>
-                                                    </div>
-                                                    <div onClick={() => handleDeleteQuestion(index)}>
-                                                        <box-icon size='sm' name='trash'/>
-                                                    </div>
-                                                </div>
-
-                                            </div>
-                                    </div>
-                                ))}
+                                <label className='block mb-2 text-md font-medium text-gray-700'>Tiêu đề công việc</label>
+                                <input 
+                                    type='text' 
+                                    required 
+                                    {...register("jobTitle")} 
+                                    placeholder='VD: Lập trình viên Full Stack' 
+                                    className='w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent placeholder:text-sm'
+                                />
                             </div>
-                                <button onClick={addQuestion} className={`${questionSize === 4? `hidden` : ``} block border border-black bg-transparent text-black text-xs md:text-md py-3 px-12 md:px-16 rounded-md mt-4 md:mt-8 mx-auto`}>Thêm câu hỏi</button>
+                            
+                            <div>
+                                <label className='block mb-2 text-md font-medium text-gray-700'>Loại việc làm</label>
+                                <input 
+                                    type='text' 
+                                    required 
+                                    {...register("employmentType")} 
+                                    placeholder='VD: Thực tập, Bán thời gian, Toàn thời gian' 
+                                    className='w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent placeholder:text-sm'
+                                />
+                            </div>
+                            
+                            <div>
+                                <label className='block mb-2 text-md font-medium text-gray-700'>Địa điểm</label>
+                                <input 
+                                    type='text' 
+                                    required 
+                                    {...register("location")} 
+                                    placeholder='VD: Hà Nội' 
+                                    className='w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent placeholder:text-sm'
+                                />
+                            </div>
+                            
+                            <div>
+                                <label className='block mb-2 text-md font-medium text-gray-700'>
+                                    Mức lương dự kiến <span className='text-sm text-gray-500'>(triệu/tháng)</span>
+                                </label>
+                                <input 
+                                    type='text' 
+                                    required 
+                                    {...register("salary")} 
+                                    placeholder='VD: 20' 
+                                    className='w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent placeholder:text-sm'
+                                />
+                            </div>
+                            
+                            <div>
+                                <label className='block mb-2 text-md font-medium text-gray-700'>Mô tả công việc</label>
+                                <textarea 
+                                    className='w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent placeholder:text-sm resize-y' 
+                                    rows={6} 
+                                    placeholder='Mô tả công việc và yêu cầu' 
+                                    required 
+                                    {...register("description")} 
+                                />
+                            </div>
                         </div>
                     </div>
 
                     {/* Submit button */}
-                    <div className='flex justify-center my-8'>
-                        <button className='block bg-secondary text-white text-md font-medium py-3 px-16 rounded-md hover:opacity-90 transition-opacity shadow-md hover:shadow-lg'>Tạo bài đăng việc làm</button>
+                    <div className='flex justify-center mt-8'>
+                        <button 
+                            type='submit'
+                            className='bg-secondary text-white text-md font-medium py-3 px-16 rounded-md hover:opacity-90 transition-opacity shadow-md hover:shadow-lg'
+                        >
+                            Tạo bài đăng việc làm
+                        </button>
                     </div>
                 </form>
 

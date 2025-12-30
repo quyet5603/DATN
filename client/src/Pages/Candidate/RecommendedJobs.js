@@ -13,15 +13,16 @@ export const RecommendedJobs = () => {
   }, []);
 
   const fetchRecommendedJobs = async () => {
-    if (!loginData?.token) {
-      setLoading(false);
-      return;
-    }
-
     try {
+      const token = localStorage.getItem('usertoken');
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+
       const response = await fetch('http://localhost:8080/api/ai/recommended-jobs', {
         headers: {
-          'Authorization': `Bearer ${loginData.token}`
+          'Authorization': token.startsWith('Bearer') ? token : `Bearer ${token}`
         }
       });
 
@@ -30,6 +31,7 @@ export const RecommendedJobs = () => {
       if (response.ok) {
         setJobs(data.jobs || []);
       } else {
+        console.error('API error:', data);
         toast.error(data.error || 'Không thể lấy danh sách công việc gợi ý');
       }
     } catch (error) {
@@ -54,7 +56,8 @@ export const RecommendedJobs = () => {
     );
   }
 
-  if (!loginData?.token) {
+  const token = localStorage.getItem('usertoken');
+  if (!token) {
     return (
       <div className="max-w-screen-2xl container mx-auto xl:px-24 px-4 py-10">
         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">

@@ -7,11 +7,23 @@ import User from '../../models/User.js';
  */
 export const getRecommendedJobs = async (req, res) => {
   try {
-    const userId = req.user?.id;
+    const userId = req.userId || req.user?._id || req.user?.id;
+    
+    if (!userId) {
+      return res.status(401).json({ 
+        error: 'User not authenticated' 
+      });
+    }
     
     // Get user CV
     const user = await User.findById(userId);
-    if (!user || !user.cvText) {
+    if (!user) {
+      return res.status(404).json({ 
+        error: 'User not found' 
+      });
+    }
+
+    if (!user.cvText && !user.cvFilePath) {
       return res.status(404).json({ 
         error: 'CV not found. Please upload your CV first.' 
       });
@@ -20,41 +32,40 @@ export const getRecommendedJobs = async (req, res) => {
     // Get all active jobs
     const jobs = await Job.find({});
     
+    if (jobs.length === 0) {
+      return res.json({
+        success: true,
+        jobs: [],
+        total: 0,
+        message: 'No jobs available'
+      });
+    }
+    
     // Match CV với từng job
-    const matches = await Promise.all(
-      jobs.map(async (job) => {
-        try {
-          // Create a buffer from CV text (giả định có sẵn CV file)
-          // Trong thực tế, cần lưu CV file và đọc lại
-          // Tạm thời dùng CV text đã extract sẵn
-          
-          // TODO: Nếu có CV file, dùng analyzeResume với file buffer
-          // Nếu chỉ có text, cần adapt Python service để nhận text thay vì file
-          
-          // Placeholder: Giả sử đã có match score từ trước
-          // Hoặc cần gọi Python service với CV text
-          
-          return {
-            jobId: job._id,
-            jobTitle: job.jobTitle,
-            matchScore: 0 // Placeholder
-          };
-        } catch (error) {
-          console.error(`Error matching job ${job._id}:`, error);
-          return null;
-        }
-      })
-    );
+    // Tạm thời trả về tất cả jobs với placeholder score
+    // Trong tương lai có thể gọi Python service để tính match score thực sự
+    const matches = jobs.map((job) => {
+      return {
+        jobId: job._id.toString(),
+        jobTitle: job.jobTitle,
+        location: job.location,
+        employmentType: job.employmentType,
+        salary: job.salary,
+        description: job.description,
+        matchScore: user.cvScore || 0 // Sử dụng cvScore nếu có, nếu không thì 0
+      };
+    });
 
-    // Filter và sort theo match score
-    const validMatches = matches
-      .filter(m => m !== null)
-      .sort((a, b) => b.matchScore - a.matchScore);
+    // Sort theo match score (cao nhất trước)
+    matches.sort((a, b) => b.matchScore - a.matchScore);
+
+    // Trả về top 10 jobs có match score cao nhất
+    const topJobs = matches.slice(0, 10);
 
     res.json({
       success: true,
-      jobs: validMatches,
-      total: validMatches.length
+      jobs: topJobs,
+      total: topJobs.length
     });
 
   } catch (error) {

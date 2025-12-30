@@ -14,6 +14,9 @@ const INTERVIEW_BOT_URL = process.env.INTERVIEW_BOT_SERVICE_URL || 'http://local
  */
 export async function startInterview(jobTitle, jobDescription = null, candidateName = null) {
   try {
+    console.log(`[Interview Bot] Calling ${INTERVIEW_BOT_URL}/api/start-interview`);
+    console.log(`[Interview Bot] Request data:`, { jobTitle, jobDescription: jobDescription?.substring(0, 100), candidateName });
+    
     const response = await axios.post(
       `${INTERVIEW_BOT_URL}/api/start-interview`,
       {
@@ -29,10 +32,21 @@ export async function startInterview(jobTitle, jobDescription = null, candidateN
       }
     );
 
+    console.log(`[Interview Bot] Response status: ${response.status}`);
+    console.log(`[Interview Bot] Response data:`, response.data);
     return response.data;
   } catch (error) {
-    console.error('Error starting interview:', error.message);
-    throw new Error(`Failed to start interview: ${error.message}`);
+    console.error('[Interview Bot] Error starting interview:', error.message);
+    if (error.response) {
+      console.error('[Interview Bot] Response status:', error.response.status);
+      console.error('[Interview Bot] Response data:', error.response.data);
+      throw new Error(`Failed to start interview: ${error.response.data?.detail || error.response.data?.error || error.message}`);
+    } else if (error.request) {
+      console.error('[Interview Bot] No response received. Is the service running?');
+      throw new Error(`Cannot connect to interview bot service at ${INTERVIEW_BOT_URL}. Please ensure the service is running.`);
+    } else {
+      throw new Error(`Failed to start interview: ${error.message}`);
+    }
   }
 }
 

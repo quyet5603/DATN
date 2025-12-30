@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useParams, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { SimilarJobs } from '../SimilarJobs'
 import { MatchScoreBar } from '../AI/MatchScoreBar'
+import { toast } from 'react-toastify'
+import { LoginContext } from '../ContextProvider/Context'
 
 export const JobDetails = () => {
 
@@ -27,28 +29,45 @@ export const JobDetails = () => {
         }
     })
 
-    const randomNum = Math.floor(Math.random() * (200 - 20 + 1) + 20)
     const { id } = useParams();
+    const navigate = useNavigate();
     const [job, setJob] = useState();
     const [applicants, setApplicants] = useState();
     const [file, setFile] = useState();
     const [matchScore, setMatchScore] = useState(null);
     const [loadingMatchScore, setLoadingMatchScore] = useState(false);
+    const [applicationsCount, setApplicationsCount] = useState(0);
 
     const [loginData, setLoginData] = useState();
     
     useEffect(() => {
         let token = localStorage.getItem("user");
-        const user = JSON.parse(token);
-        setLoginData(user)
-        console.log(user);
+        if (token) {
+            const user = JSON.parse(token);
+            setLoginData(user)
+            console.log(user);
+        }
     }, [])
 
     useEffect(() => {
         fetch(`http://localhost:8080/jobs/current-job/${id}`).then(res => res.json()).then(
-            data => { setJob(data); console.log(data); }
-        )
-    }, []);
+            data => { 
+                setJob(data); 
+                console.log(data); 
+            }
+        );
+        
+        // Fetch số lượng ứng viên thực tế
+        fetch(`http://localhost:8080/application/all-application/`)
+            .then(res => res.json())
+            .then(data => {
+                const jobApplications = data.filter(app => app.jobID === id);
+                setApplicationsCount(jobApplications.length);
+            })
+            .catch(error => {
+                console.error('Error fetching applications count:', error);
+            });
+    }, [id]);
 
     // Fetch match score nếu user đã login và là candidate
     useEffect(() => {
@@ -108,31 +127,66 @@ export const JobDetails = () => {
     }, [job]);
 
     const handleFileUpload = (e) => {
-        const file = e.target.files[0];
-        setFile(file.name);
-        const formData = new FormData();
-        formData.append("resume", file);
-        fetch(`http://localhost:8080/upload/resume/${applicants._id}`, {
-            method: "POST",
-            body: formData,
-        })
-            .then((res) => res.json())
-            .then((result) => {
-                console.log(result);
-            });
+        const selectedFile = e.target.files[0];
+        if (selectedFile) {
+            setFile(selectedFile);
+            
+            // Upload CV lên server
+            const formData = new FormData();
+            formData.append("resume", selectedFile);
+            
+            const token = localStorage.getItem('usertoken');
+            const userStr = localStorage.getItem('user');
+            let userId = null;
+            
+            if (userStr) {
+                try {
+                    const user = JSON.parse(userStr);
+                    userId = user._id;
+                } catch (e) {
+                    console.error('Error parsing user data:', e);
+                }
+            }
+            
+            if (userId) {
+                fetch(`http://localhost:8080/upload/resume/${userId}`, {
+                    method: "POST",
+                    body: formData,
+                })
+                    .then(async (res) => {
+                        const result = await res.json();
+                        if (res.ok && result.success) {
+                            toast.success('CV đã được tải lên thành công');
+                            console.log('CV uploaded:', result);
+                        } else {
+                            console.error('Upload error:', result);
+                            toast.error(result.error || result.message || 'Lỗi khi tải CV lên');
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('Error uploading CV:', error);
+                        toast.error('Lỗi khi tải CV lên');
+                    });
+            } else {
+                toast.error('Vui lòng đăng nhập để tải CV');
+            }
+        }
     }
 
-    const onSubmit = (data) => {
-        console.log(data);
-        // fetch(`http://localhost:8080/upload/resume/${applicants._id}`, {
-        //     method: "POST",
-        //     headers: { "content-type": "application/json" },
-        //     body: JSON.stringify(data),
-        // })
-        //     .then((res) => res.json())
-        //     .then((result) => {
-        //         console.log(result);
-        //     });
+    const handleApplyClick = (e) => {
+        e.preventDefault();
+        
+        // Kiểm tra đăng nhập
+        const token = localStorage.getItem('usertoken');
+        const user = localStorage.getItem('user');
+        if (!token || !user) {
+            toast.error('Vui lòng đăng nhập để ứng tuyển');
+            navigate('/login');
+            return;
+        }
+
+        // Redirect đến trang application form (CV có thể upload sau)
+        navigate(`/application-form/${id}`);
     }
 
     return (
@@ -151,7 +205,36 @@ export const JobDetails = () => {
                             <div className='flex items-center flex-wrap justify-center md:justify-normal'>
                                 <div className='mx-4 my-3 text-center md:text-left md:my-0'>
                                     <h1 className='text-xl md:text-2xl font-bold'>{job.jobTitle}</h1>
-                                    <p className='text-sm text-gray-700'>Đăng tải - 19/06/2024</p>
+                                    <p className='text-sm text-gray-700'>
+                                        Đăng tải - {(() => {
+                                            // Ưu tiên createdAt, nếu không có thì dùng updatedAt
+                                            let dateToUse = job.createdAt || job.updatedAt;
+                                            
+                                            // Nếu vẫn không có, lấy timestamp từ ObjectId (8 ký tự đầu của _id là timestamp)
+                                            if (!dateToUse && job._id) {
+                                                try {
+                                                    const idStr = job._id.toString();
+                                                    if (idStr.length === 24) {
+                                                        // ObjectId có 24 ký tự hex, 8 ký tự đầu là timestamp (4 bytes)
+                                                        const timestampHex = idStr.substring(0, 8);
+                                                        const timestamp = parseInt(timestampHex, 16) * 1000;
+                                                        dateToUse = new Date(timestamp);
+                                                    }
+                                                } catch (e) {
+                                                    console.error('Error parsing ObjectId timestamp:', e);
+                                                }
+                                            }
+                                            
+                                            if (dateToUse) {
+                                                return new Date(dateToUse).toLocaleDateString('vi-VN', { 
+                                                    day: '2-digit', 
+                                                    month: '2-digit', 
+                                                    year: 'numeric' 
+                                                });
+                                            }
+                                            return 'N/A';
+                                        })()}
+                                    </p>
                                 </div>
                             </div>
 
@@ -167,7 +250,7 @@ export const JobDetails = () => {
                                     <h2 className='text-xs md:text-md font-semibold text-gray-700'>Địa điểm</h2><p className='text-sm md:text-lg font-bold'>{job.location}</p>
                                 </div>
                                 <div className='bg-green-300 rounded-lg py-4 md:py-5 text-center'>
-                                    <h2 className='text-xs md:text-md font-semibold text-gray-700'>Ứng viên</h2><p className='text-sm md:text-lg font-bold'>{randomNum}</p>
+                                    <h2 className='text-xs md:text-md font-semibold text-gray-700'>Ứng viên</h2><p className='text-sm md:text-lg font-bold'>{applicationsCount}</p>
                                 </div>
                             </div>
 
@@ -204,15 +287,23 @@ export const JobDetails = () => {
                 </div>
 
                 {/* Submit button */}
-                <form className='mt-8' onSubmit={handleSubmit(onSubmit)}>
+                <div className='mt-8'>
                     <h2 className=' font-bold my-4'>Tải lên CV để ứng tuyển<span className=' text-red-600'>*</span></h2>
-                    <div className='mb-4 px-2'>
+                    <div className='mb-4 px-2 flex flex-wrap gap-3'>
                         <Link 
                             to={`/cv-upload/${id}`}
                             className='inline-block bg-blue-600 text-white text-sm font-medium py-2 px-4 rounded-md hover:bg-blue-700 transition-colors'
                         >
-                            🔍 Phân tích CV với AI
+                            🔍 Phân tích CV
                         </Link>
+                        {loginData && loginData.role === 'candidate' && (
+                            <Link 
+                                to={`/interview-practice/${id}`}
+                                className='inline-block bg-purple-600 text-white text-sm font-medium py-2 px-4 rounded-md hover:bg-purple-700 transition-colors'
+                            >
+                                💬 Luyện tập phỏng vấn
+                            </Link>
+                        )}
                     </div>
                     <div className='px-2 grid grid-cols-1 md:grid-cols-2 items-center justify-items-center gap-4'>
 
@@ -224,29 +315,32 @@ export const JobDetails = () => {
                         {
                             job && applicants &&
                                 job.applicants.some(jobApplicant => {
-                                    applicants.some(app => {
-
+                                    return applicants.some(app => {
                                         return jobApplicant.applicant === app._id
                                     })
                                 }) ?
                                 <Link to={`/application-form/${job._id}`}>
                                     <div className='flex justify-center'>
-                                        <button className='block bg-primary text-white text-md font-medium py-2 px-12 md:px-16 rounded-md hover:opacity-90 transition-opacity shadow-md hover:shadow-lg'>Ứng tuyển ngay</button>
+                                        <button type="button" className='block bg-secondary text-white text-md font-medium py-2 px-12 md:px-16 rounded-md hover:opacity-90 transition-opacity shadow-md hover:shadow-lg'>Ứng tuyển ngay</button>
                                     </div>
                                 </Link>
                                 :
                                 <div className='flex justify-center'>
-                                    <button className='block bg-primary text-white text-md font-medium py-2 px-12 md:px-16 rounded-md hover:opacity-90 transition-opacity shadow-md hover:shadow-lg'>Ứng tuyển ngay</button>
+                                    <button 
+                                        type="button"
+                                        onClick={handleApplyClick}
+                                        className='block bg-secondary text-white text-md font-medium py-2 px-12 md:px-16 rounded-md hover:opacity-90 transition-opacity shadow-md hover:shadow-lg'
+                                    >
+                                        Ứng tuyển ngay
+                                    </button>
                                 </div>
-                            // </Link>
-                            // <p>You already applied here</p>
                         }
                     </div>
-                </form>
-                {job && job.applicants && job.applicants.length > 0 && (
-                    <div className="mt-4">
+                </div>
+                {file && (
+                    <div className="mt-4 px-2">
                         <h2 className="font-bold">CV đã tải lên:</h2>
-                        <p>{file}</p>
+                        <p className="text-sm text-gray-600">{file.name || file}</p>
                     </div>
                 )}
                 <div className='text-center'>

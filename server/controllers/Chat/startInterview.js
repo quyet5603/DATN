@@ -54,10 +54,12 @@ export const startInterviewSession = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Error starting interview:', error);
+    console.error('[Start Interview] Error:', error);
+    console.error('[Start Interview] Error stack:', error.stack);
     res.status(500).json({ 
       error: 'Failed to start interview',
-      message: error.message 
+      message: error.message || 'Unknown error occurred',
+      details: process.env.NODE_ENV === 'development' ? error.stack : undefined
     });
   }
 };

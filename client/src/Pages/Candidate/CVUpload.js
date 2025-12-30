@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { LoginContext } from '../../components/ContextProvider/Context';
@@ -10,6 +10,18 @@ export const CVUpload = () => {
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [analysis, setAnalysis] = useState(null);
+
+  // Check authentication on mount
+  useEffect(() => {
+    const token = localStorage.getItem('usertoken');
+    const user = localStorage.getItem('user');
+    
+    if (!token || !user) {
+      toast.error('Vui lòng đăng nhập để sử dụng tính năng này');
+      navigate('/login');
+      return;
+    }
+  }, [navigate]);
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
@@ -28,7 +40,10 @@ export const CVUpload = () => {
       return;
     }
 
-    if (!loginData?.token) {
+    // Check authentication - token và user từ localStorage
+    const token = localStorage.getItem('usertoken');
+    const user = localStorage.getItem('user');
+    if (!token || !user) {
       toast.error('Vui lòng đăng nhập');
       navigate('/login');
       return;
@@ -42,22 +57,62 @@ export const CVUpload = () => {
       const response = await fetch(`http://localhost:8080/api/ai/analyze-cv/${jobId}`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${loginData.token}`
+          'Authorization': token.startsWith('Bearer') ? token : `Bearer ${token}`
         },
         body: formData
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        setAnalysis(data);
-        toast.success('Phân tích CV thành công!');
-      } else {
-        toast.error(data.error || 'Lỗi phân tích CV');
+      // Check if response is ok before parsing JSON
+      if (!response.ok) {
+        let errorMessage = 'Lỗi phân tích CV';
+        let errorDetails = null;
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.error || errorData.message || errorMessage;
+          errorDetails = errorData.details;
+        } catch (e) {
+          errorMessage = `Lỗi ${response.status}: ${response.statusText}`;
+        }
+        console.error('API Error:', {
+          status: response.status,
+          statusText: response.statusText,
+          error: errorMessage,
+          details: errorDetails
+        });
+        toast.error(errorMessage);
+        return;
       }
+
+      let data;
+      try {
+        const responseText = await response.text();
+        console.log('Response text:', responseText.substring(0, 200)); // Log first 200 chars
+        data = JSON.parse(responseText);
+      } catch (parseError) {
+        console.error('Error parsing response:', parseError);
+        toast.error('Lỗi khi xử lý kết quả từ server');
+        return;
+      }
+      
+      // Check if response has success flag
+      if (data.success === false) {
+        toast.error(data.error || 'Lỗi phân tích CV');
+        return;
+      }
+
+      // Validate analysis data
+      if (!data.score && data.score !== 0) {
+        console.error('Invalid analysis data:', data);
+        toast.error('Dữ liệu phân tích không hợp lệ');
+        return;
+      }
+
+      // Set analysis result
+      setAnalysis(data);
+      toast.success('Phân tích CV thành công!');
     } catch (error) {
       console.error('Error uploading CV:', error);
-      toast.error('Có lỗi xảy ra khi phân tích CV');
+      toast.error(`Có lỗi xảy ra khi phân tích CV: ${error.message || 'Vui lòng thử lại sau'}`);
     } finally {
       setLoading(false);
     }

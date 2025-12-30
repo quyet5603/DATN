@@ -45,7 +45,14 @@ const JobSchema = new mongoose.Schema({
     requiredSkills: [String],
     jobEmbedding: [Number], // Vector embedding cho semantic search
     minExperience: Number,
-    educationLevel: String
+    educationLevel: String,
+    employerId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: false // Tạm thời optional để không break dữ liệu cũ
+    }
+}, {
+    timestamps: true // Tự động thêm createdAt và updatedAt
 });
 
 const Job = mongoose.model('Job', JobSchema);

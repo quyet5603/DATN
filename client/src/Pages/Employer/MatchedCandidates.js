@@ -17,17 +17,19 @@ export const MatchedCandidates = () => {
   }, [jobId]);
 
   const fetchMatchedCandidates = async () => {
-    if (!loginData?.token) {
-      setLoading(false);
-      return;
-    }
-
     try {
+      const token = localStorage.getItem('usertoken');
+      if (!token) {
+        toast.error('Vui lòng đăng nhập');
+        setLoading(false);
+        return;
+      }
+
       const response = await fetch(
         `http://localhost:8080/api/ai/matched-candidates/${jobId}`,
         {
           headers: {
-            'Authorization': `Bearer ${loginData.token}`
+            'Authorization': token.startsWith('Bearer') ? token : `Bearer ${token}`
           }
         }
       );
@@ -128,7 +130,7 @@ export const MatchedCandidates = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <Link
-                      to={`/candidate/${candidate.applicationId}`}
+                      to={`/shortlist/details/${candidate.candidateId}/${jobId}`}
                       className="text-blue-600 hover:text-blue-900"
                     >
                       Xem chi tiết

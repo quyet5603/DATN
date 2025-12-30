@@ -14,9 +14,13 @@ export const getEmployerStats = async (req, res) => {
       return res.status(401).json({ error: 'User not authenticated' });
     }
 
-    // Get all jobs của employer (giả định job có employerId field, nếu không thì lấy tất cả)
-    // Trong project này, có thể cần update Job model để có employerId
-    const jobs = await Job.find({});
+    // Get all jobs của employer
+    const jobs = await Job.find({ 
+        $or: [
+            { employerId: userId },
+            { employerId: { $exists: false } } // Fallback: lấy jobs cũ chưa có employerId
+        ]
+    });
     const totalJobs = jobs.length;
 
     // Get all applications cho các jobs này

@@ -27,20 +27,22 @@ export const getMatchedCandidates = async (req, res) => {
       });
     }
 
-    // Get CV files của các candidates
+    // Get thông tin của các candidates
     const candidates = await Promise.all(
       applications.map(async (app) => {
         const candidate = await User.findById(app.candidateID);
-        if (!candidate || !candidate.cvFilePath) {
+        if (!candidate) {
           return null;
         }
         
         return {
-          candidateId: candidate._id,
-          candidateName: candidate.userName,
-          applicationId: app._id,
-          cvFilePath: candidate.cvFilePath,
-          cvText: candidate.cvText
+          candidateId: candidate._id.toString(),
+          candidateName: candidate.userName || 'N/A',
+          candidateEmail: candidate.userEmail || candidate.email || 'N/A',
+          applicationId: app._id.toString(),
+          cvFilePath: candidate.cvFilePath || null,
+          cvText: candidate.cvText || null,
+          matchScore: app.matchScore || 0
         };
       })
     );
@@ -51,14 +53,13 @@ export const getMatchedCandidates = async (req, res) => {
     // Cần đọc CV files và gọi Python service
     // Tạm thời return candidates với placeholder scores
 
+    // Sort theo match score (cao nhất trước)
+    validCandidates.sort((a, b) => (b.matchScore || 0) - (a.matchScore || 0));
+
     const matchedCandidates = validCandidates.map((candidate, index) => ({
       ...candidate,
-      matchScore: 0, // Placeholder - cần gọi Python service
       rank: index + 1
     }));
-
-    // Sort theo match score (sẽ có sau khi gọi Python service)
-    matchedCandidates.sort((a, b) => b.matchScore - a.matchScore);
 
     res.json({
       success: true,

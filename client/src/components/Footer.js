@@ -1,27 +1,15 @@
 import React from 'react'
 
 export const Footer = () => {
-
-    const footerNav = ["Việc làm","Đăng nhập","Đăng ký","Đăng việc"]
-
     return (
-        <footer class="bg-gray-50 rounded-lg shadow-lg mt-12">
-            <div class="w-full max-w-screen-xl mx-auto p-6 md:py-8">
-                <div class="flex flex-col items-center justify-center">
-                    <ul class="flex flex-wrap justify-center items-center mb-4 text-sm font-medium text-gray-600 gap-4 md:gap-6">
-                        {
-                            footerNav.map( (menu, key)=> {
-                                return (
-                                    <li key={key}>
-                                        <a href="#" class="hover:text-primary hover:underline transition-colors">{menu}</a>
-                                    </li>
-                                )
-                            })
-                        }
-                    </ul>
+        <footer className="bg-gray-50 rounded-lg shadow-lg mt-12">
+            <div className="w-full max-w-screen-xl mx-auto p-6 md:py-8">
+                <div className="flex flex-col items-center justify-center">
+                    <p className="text-sm text-gray-500 text-center">
+                        © {new Date().getFullYear()} Hệ thống hỗ trợ tuyển dụng. All rights reserved.
+                    </p>
                 </div>
             </div>
         </footer>
-
     )
 }

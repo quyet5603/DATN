@@ -1,5 +1,6 @@
 import express from 'express';
 import Job from '../models/Job.js';
+import { authenticate } from '../middleware/VerifyToken.js';
 
 const router = express.Router();
 
@@ -11,7 +12,7 @@ import { updateJob } from '../controllers/Job/updateJob.js';
 import { updateJobByCandidate } from '../controllers/Job/updateJobByCandidate.js';
 
 router.get('/all-jobs', getJobs); 
-router.post('/post-job', addJob); 
+router.post('/post-job', authenticate, addJob); 
 router.get('/current-job/:id', getJob); 
 router.delete('/delete-job/:id', deleteJob); 
 router.put('/update-job/:id', updateJob);

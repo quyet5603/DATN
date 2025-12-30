@@ -3,6 +3,9 @@ import uniqid from 'uniqid';
 
 const addJob = async (req, res) => {
     const { jobTitle, employmentType, location, salary, description, applicationForm, applicants } = req.body;
+    
+    // Lấy employerId từ authenticated user hoặc từ body
+    const employerId = req.userId || req.user?._id || req.body.employerId;
 
     console.log("Data on backend");
     console.log(req.body);
@@ -15,7 +18,8 @@ const addJob = async (req, res) => {
         salary,
         description,
         applicationForm,
-        applicants
+        applicants,
+        employerId: employerId
     });
 
     try {   

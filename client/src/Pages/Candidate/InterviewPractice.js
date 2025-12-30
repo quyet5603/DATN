@@ -13,27 +13,55 @@ export const InterviewPractice = () => {
   const [loading, setLoading] = useState(false);
   const [interviewComplete, setInterviewComplete] = useState(false);
   const [evaluation, setEvaluation] = useState(null);
+  const [token, setToken] = useState(null);
+  const [error, setError] = useState(null);
+  const [isInitializing, setIsInitializing] = useState(true);
+
+  // Lấy token từ localStorage
+  useEffect(() => {
+    const userToken = localStorage.getItem('usertoken');
+    const userStr = localStorage.getItem('user');
+    
+    if (userToken && userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        setToken(userToken);
+        // Cập nhật loginData nếu chưa có
+        if (!loginData) {
+          // loginData sẽ được set từ context
+        }
+      } catch (e) {
+        console.error('Error parsing user data:', e);
+      }
+    }
+  }, []);
 
   useEffect(() => {
-    if (jobId && loginData?.token && !sessionId) {
+    if (jobId && token && !sessionId) {
+      setIsInitializing(true);
       startInterview();
+    } else if (!token) {
+      setIsInitializing(false);
     }
-  }, [jobId, loginData]);
+  }, [jobId, token]);
 
   const startInterview = async () => {
-    if (!loginData?.token) {
+    if (!token) {
       toast.error('Vui lòng đăng nhập');
+      setError('Vui lòng đăng nhập');
+      setIsInitializing(false);
       return;
     }
 
     setLoading(true);
+    setError(null);
     try {
       const response = await fetch(
         `http://localhost:8080/api/chat/start-interview/${jobId}`,
         {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${loginData.token}`,
+            'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
           }
         }
@@ -50,12 +78,51 @@ export const InterviewPractice = () => {
           }
         ]);
         toast.success('Đã bắt đầu phỏng vấn');
+        setIsInitializing(false);
       } else {
-        toast.error(data.error || 'Không thể bắt đầu phỏng vấn');
+        // Xử lý error có thể là object hoặc string
+        let errorMsg = 'Không thể bắt đầu phỏng vấn';
+        if (data.error) {
+          if (typeof data.error === 'string') {
+            errorMsg = data.error;
+          } else if (data.error.message) {
+            errorMsg = data.error.message;
+          } else if (data.error.name) {
+            errorMsg = data.error.name;
+          }
+        }
+        
+        // Kiểm tra nếu token hết hạn
+        if (response.status === 401 || errorMsg.toLowerCase().includes('expired') || errorMsg.toLowerCase().includes('jwt')) {
+          toast.error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+          setTimeout(() => {
+            localStorage.removeItem('usertoken');
+            localStorage.removeItem('user');
+            navigate('/login');
+          }, 2000);
+          return;
+        }
+        
+        toast.error(errorMsg);
+        setError(errorMsg);
+        setIsInitializing(false);
       }
     } catch (error) {
       console.error('Error starting interview:', error);
-      toast.error('Có lỗi xảy ra');
+      // Kiểm tra nếu là lỗi network hoặc 401
+      if (error.message && (error.message.includes('401') || error.message.includes('expired'))) {
+        toast.error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+        setTimeout(() => {
+          localStorage.removeItem('usertoken');
+          localStorage.removeItem('user');
+          navigate('/login');
+        }, 2000);
+        return;
+      }
+      const errorMsg = 'Không thể kết nối đến server. Vui lòng kiểm tra interview bot service có đang chạy không.';
+      toast.error(errorMsg);
+      setError(errorMsg);
+      setIsInitializing(false);
     } finally {
       setLoading(false);
     }
@@ -75,7 +142,7 @@ export const InterviewPractice = () => {
         {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${loginData.token}`,
+            'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({ message: userMessage })
@@ -86,7 +153,13 @@ export const InterviewPractice = () => {
 
       if (response.ok) {
         if (data.is_complete) {
+          // Interview hoàn thành - không thêm message "Interview completed" vào chat
+          // Chỉ set flag và tự động gọi evaluation
           setInterviewComplete(true);
+          setMessages((prev) => [
+            ...prev,
+            { role: 'assistant', content: 'Cảm ơn bạn đã trả lời tất cả câu hỏi. Đang đánh giá câu trả lời của bạn...' }
+          ]);
           // Auto get evaluation
           await endInterview();
         } else {
@@ -96,7 +169,16 @@ export const InterviewPractice = () => {
           ]);
         }
       } else {
-        toast.error(data.error || 'Có lỗi xảy ra');
+        // Xử lý error có thể là object hoặc string
+        let errorMsg = 'Có lỗi xảy ra';
+        if (data.error) {
+          if (typeof data.error === 'string') {
+            errorMsg = data.error;
+          } else if (data.error.message) {
+            errorMsg = data.error.message;
+          }
+        }
+        toast.error(errorMsg);
       }
     } catch (error) {
       console.error('Error sending message:', error);
@@ -116,7 +198,7 @@ export const InterviewPractice = () => {
         {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${loginData.token}`,
+            'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
           }
         }
@@ -128,7 +210,16 @@ export const InterviewPractice = () => {
         setEvaluation(data.summary);
         toast.success('Đã hoàn thành phỏng vấn');
       } else {
-        toast.error(data.error || 'Không thể kết thúc phỏng vấn');
+        // Xử lý error có thể là object hoặc string
+        let errorMsg = 'Không thể kết thúc phỏng vấn';
+        if (data.error) {
+          if (typeof data.error === 'string') {
+            errorMsg = data.error;
+          } else if (data.error.message) {
+            errorMsg = data.error.message;
+          }
+        }
+        toast.error(errorMsg);
       }
     } catch (error) {
       console.error('Error ending interview:', error);
@@ -138,7 +229,12 @@ export const InterviewPractice = () => {
     }
   };
 
-  if (!loginData?.token) {
+  // Kiểm tra đăng nhập
+  const userToken = localStorage.getItem('usertoken');
+  const userStr = localStorage.getItem('user');
+  const isLoggedIn = userToken && userStr;
+
+  if (!isLoggedIn) {
     return (
       <div className="max-w-screen-2xl container mx-auto xl:px-24 px-4 py-10">
         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
@@ -161,6 +257,47 @@ export const InterviewPractice = () => {
 
         {/* Chat Messages */}
         <div className="border rounded-lg p-4 h-96 overflow-y-auto mb-4 bg-gray-50">
+          {isInitializing && !error && (
+            <div className="flex items-center justify-center h-full">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                <p className="text-gray-600">Đang khởi tạo buổi phỏng vấn...</p>
+                <p className="text-sm text-gray-500 mt-2">Vui lòng đợi trong giây lát</p>
+              </div>
+            </div>
+          )}
+          
+          {error && (
+            <div className="flex items-center justify-center h-full">
+              <div className="text-center bg-red-50 border border-red-200 rounded-lg p-6 max-w-md">
+                <p className="text-red-800 font-semibold mb-2">⚠️ Không thể bắt đầu phỏng vấn</p>
+                <p className="text-red-600 text-sm mb-4">
+                  {typeof error === 'string' ? error : (error?.message || error?.name || 'Có lỗi xảy ra')}
+                </p>
+                <button
+                  onClick={startInterview}
+                  className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700"
+                >
+                  Thử lại
+                </button>
+              </div>
+            </div>
+          )}
+
+          {!isInitializing && !error && messages.length === 0 && !loading && (
+            <div className="flex items-center justify-center h-full">
+              <div className="text-center">
+                <p className="text-gray-600 mb-4">Chưa có tin nhắn nào</p>
+                <button
+                  onClick={startInterview}
+                  className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700"
+                >
+                  Bắt đầu phỏng vấn
+                </button>
+              </div>
+            </div>
+          )}
+
           {messages.map((msg, idx) => (
             <div
               key={idx}
@@ -177,7 +314,7 @@ export const InterviewPractice = () => {
               </div>
             </div>
           ))}
-          {loading && (
+          {loading && messages.length > 0 && (
             <div className="text-left">
               <div className="inline-block bg-white border px-4 py-2 rounded-lg">
                 Đang suy nghĩ...
@@ -187,7 +324,7 @@ export const InterviewPractice = () => {
         </div>
 
         {/* Input Area */}
-        {!interviewComplete && sessionId && (
+        {!interviewComplete && sessionId && !evaluation && (
           <div className="flex gap-2">
             <input
               type="text"
@@ -205,6 +342,13 @@ export const InterviewPractice = () => {
             >
               Gửi
             </button>
+          </div>
+        )}
+
+        {/* Thông báo khi đang đánh giá */}
+        {interviewComplete && !evaluation && (
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
+            <p className="text-blue-800">Đang đánh giá câu trả lời của bạn. Vui lòng đợi...</p>
           </div>
         )}
 

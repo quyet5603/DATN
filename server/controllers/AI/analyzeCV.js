@@ -9,7 +9,7 @@ export const analyzeCV = async (req, res) => {
   try {
     const { jobId } = req.params;
     const resumeFile = req.file; // từ multer middleware
-    const userId = req.user?.id; // từ auth middleware
+    const userId = req.userId || req.user?._id; // từ auth middleware
 
     if (!resumeFile) {
       return res.status(400).json({ error: 'No resume file provided' });
@@ -22,11 +22,23 @@ export const analyzeCV = async (req, res) => {
     }
 
     // Call Python service để phân tích CV
+    console.log('Calling Python service to analyze CV...', {
+      jobId,
+      filename: resumeFile.originalname,
+      fileSize: resumeFile.size
+    });
+    
     const analysis = await analyzeResume(
       resumeFile.buffer,
       resumeFile.originalname,
       job.description
     );
+    
+    console.log('Analysis result received:', {
+      score: analysis.score,
+      hasMatchReasons: !!analysis.match_reasons,
+      hasRedFlags: !!analysis.red_flags
+    });
 
     // Update user với CV analysis results
     if (userId) {
@@ -58,9 +70,22 @@ export const analyzeCV = async (req, res) => {
 
   } catch (error) {
     console.error('Error analyzing CV:', error);
+    console.error('Error stack:', error.stack);
+    
+    // Provide more detailed error message
+    let errorMessage = 'Failed to analyze CV';
+    if (error.message.includes('ECONNREFUSED') || error.message.includes('connect')) {
+      errorMessage = 'Không thể kết nối đến dịch vụ phân tích CV. Vui lòng kiểm tra Python service có đang chạy không (port 5001)';
+    } else if (error.message.includes('timeout')) {
+      errorMessage = 'Phân tích CV mất quá nhiều thời gian. Vui lòng thử lại sau';
+    } else {
+      errorMessage = error.message || 'Failed to analyze CV';
+    }
+    
     res.status(500).json({ 
-      error: 'Failed to analyze CV',
-      message: error.message 
+      error: errorMessage,
+      message: error.message,
+      details: process.env.NODE_ENV === 'development' ? error.stack : undefined
     });
   }
 };

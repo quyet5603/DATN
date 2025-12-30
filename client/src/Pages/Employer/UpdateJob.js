@@ -160,7 +160,7 @@ export const UpdateJob = () => {
 
                     {/* Submit button */}
                     <div className='flex justify-center my-8'>
-                        <button className='block bg-primary text-white text-md font-medium py-3 px-16 rounded-md hover:opacity-90 transition-opacity shadow-md hover:shadow-lg'>Cập nhật bài đăng</button>
+                        <button className='block bg-secondary text-white text-md font-medium py-3 px-16 rounded-md hover:opacity-90 transition-opacity shadow-md hover:shadow-lg'>Cập nhật bài đăng</button>
                     </div>
                 </form>
 
