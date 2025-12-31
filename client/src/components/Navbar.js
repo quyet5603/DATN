@@ -281,6 +281,16 @@ export const Navbar = () => {
                                                 )}
                                             </div>
 
+                                            {/* Change Password */}
+                                            <Link
+                                                to="/change-password"
+                                                onClick={() => setIsDropdownOpen(false)}
+                                                className='flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-gray-100 transition-colors cursor-pointer'
+                                            >
+                                                <box-icon name='lock-alt' size='20px' color='#4B5563'></box-icon>
+                                                <span className='text-sm font-medium'>Đổi mật khẩu</span>
+                                            </Link>
+
                                             {/* Divider */}
                                             <div className='border-t border-gray-200 my-1'></div>
 
@@ -377,6 +387,13 @@ export const Navbar = () => {
                                             </Link>
                                         </>
                                     )}
+                                    
+                                    <Link to="/change-password" onClick={() => setIsMenuOpen(!isMenuOpen)} className='block w-full py-2 px-5 mb-2 text-center border border-gray-300 hover:bg-gray-100 rounded-md transition-colors'>
+                                        <div className='flex items-center justify-center gap-2'>
+                                            <box-icon name='lock-alt' size='18px' color='#4B5563'></box-icon>
+                                            <span>Đổi mật khẩu</span>
+                                        </div>
+                                    </Link>
                                     
                                     <button onClick={logoutHandler} className='w-full py-2 px-5 border rounded-md bg-red-50 text-red-600 hover:bg-red-100 transition-colors'>
                                         <div className='flex items-center justify-center gap-2'>

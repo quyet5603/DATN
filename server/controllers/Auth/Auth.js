@@ -1,6 +1,7 @@
 import User from '../../models/User.js'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
+import { sendVerificationEmail } from '../../services/emailService.js'
 
 const register = async (req, res) => {
     try {
@@ -22,11 +23,49 @@ const register = async (req, res) => {
 
         const hashPassword = await bcrypt.hashSync(userPassword,10)
 
-        const newUser = new User({ userName, userEmail, userPassword: hashPassword, gender, address, role, isAssigned, applications });
+        // Tạo mã xác thực email 6 chữ số
+        const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+        
+        // Thời gian hết hạn (24 giờ)
+        const verificationExpires = new Date();
+        verificationExpires.setHours(verificationExpires.getHours() + 24);
+
+        const newUser = new User({ 
+            userName, 
+            userEmail, 
+            userPassword: hashPassword, 
+            gender, 
+            address, 
+            role, 
+            isAssigned, 
+            applications,
+            emailVerified: false,
+            verificationCode: verificationCode,
+            verificationExpires: verificationExpires
+        });
         
         await newUser.save();
 
-        res.status(201).json({ message: 'User created successfully' });
+        // Gửi email xác thực
+        try {
+            await sendVerificationEmail(userEmail, verificationCode, userName);
+            console.log('Verification email sent to:', userEmail);
+        } catch (emailError) {
+            console.error('Error sending verification email:', emailError);
+            console.error('Email error details:', {
+                message: emailError.message,
+                code: emailError.code
+            });
+            // Vẫn tạo user thành công, nhưng cảnh báo
+            // User có thể yêu cầu gửi lại email verification sau
+            // Không throw error để user vẫn được tạo
+        }
+
+        res.status(201).json({ 
+            success: true,
+            message: 'Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản.',
+            requiresVerification: true
+        });
     }
     catch (error) {
         console.error('Error registering user:', error);

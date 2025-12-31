@@ -8,6 +8,10 @@ import { PostJob } from './Pages/Employer/PostJob';
 import { AllJobs } from './Pages/Employer/AllJobs';
 import { Login } from './components/Login/Login';
 import { Register } from './components/Login/Register';
+import { ForgotPassword } from './components/Login/ForgotPassword';
+import { ResetPassword } from './components/Login/ResetPassword';
+import { ChangePassword } from './components/Login/ChangePassword';
+import { VerifyEmail } from './components/Login/VerifyEmail';
 import { JobDetails } from './components/Home/JobDetails';
 import { ShortlistedCandidates } from './components/ShortlistedCandidates';
 import { ShortlistedDetails } from './components/ShortlistedDetails';
@@ -44,6 +48,10 @@ function App() {
             <Route path='/employer/dashboard' element={<AnalyticsDashboard />}/>
             <Route path='/login' element={<Login />}/>
             <Route path='/signup' element={<Register />}/>
+            <Route path='/forgot-password' element={<ForgotPassword />}/>
+            <Route path='/reset-password' element={<ResetPassword />}/>
+            <Route path='/change-password' element={<ChangePassword />}/>
+            <Route path='/verify-email' element={<VerifyEmail />}/>
 
 
             {/* <Route path='/job-detail' element={<JobDetails />}/> */}

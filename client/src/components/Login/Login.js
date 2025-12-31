@@ -78,6 +78,15 @@ export const Login = () => {
                             </div>
                         </div>
 
+                        {/* Forgot password link */}
+                        <div className='mb-4 text-right'>
+                            <Link to='/forgot-password'>
+                                <p className='text-sm text-primary hover:underline transition-colors'>
+                                    Quên mật khẩu?
+                                </p>
+                            </Link>
+                        </div>
+
                         {/* Submit button */}
                         <div className='mb-4'>
                             <button type='submit' className='w-full bg-secondary text-white text-md font-medium py-3 rounded-md hover:opacity-90 transition-opacity shadow-md hover:shadow-lg'>Đăng nhập</button>

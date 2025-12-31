@@ -73,7 +73,29 @@ const UserSchema = new mongoose.Schema({
         weaknesses: [String]
     },
     cvSuggestions: [String],
-    cvEmbedding: [Number] // Vector embedding cho semantic search
+    cvEmbedding: [Number], // Vector embedding cho semantic search
+    // Password reset fields
+    resetPasswordCode: {
+        type: String,
+        default: null
+    },
+    resetPasswordExpires: {
+        type: Date,
+        default: null
+    },
+    // Email verification fields
+    emailVerified: {
+        type: Boolean,
+        default: false
+    },
+    verificationCode: {
+        type: String,
+        default: null
+    },
+    verificationExpires: {
+        type: Date,
+        default: null
+    }
 });
 
 const User = mongoose.model('User', UserSchema);
