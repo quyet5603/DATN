@@ -33,80 +33,88 @@ export const AllJobs = () => {
         const fetchJobs = async () => {
             try {
                 setIsLoading(true);
-                const response = await fetch("http://localhost:8080/jobs/all-jobs");
+                
+                // Lấy token từ localStorage
+                const token = localStorage.getItem('usertoken');
+                if (!token) {
+                    toast.error('Vui lòng đăng nhập');
+                    navigate('/login');
+                    return;
+                }
+                
+                // Gọi API endpoint riêng cho employer (yêu cầu authentication)
+                const response = await fetch("http://localhost:8080/jobs/employer-jobs", {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': token.startsWith('Bearer') ? token : `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        toast.error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại');
+                        navigate('/login');
+                        return;
+                    }
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
                 const data = await response.json();
                 
-                console.log('All jobs from API:', data);
-                console.log('LoginData:', loginData);
+                console.log('Employer jobs from API:', data);
                 
-                // Lấy userId từ loginData hoặc localStorage
-                let userId = loginData?._id;
-                if (!userId) {
-                    const userStr = localStorage.getItem('user');
-                    if (userStr) {
-                        try {
-                            const user = JSON.parse(userStr);
-                            userId = user._id;
-                        } catch (e) {
-                            console.error('Error parsing user:', e);
-                        }
-                    }
-                }
-                
-                // Nếu có userId, filter jobs của employer đó
-                // Nếu không có userId hoặc không filter được, hiển thị tất cả jobs
-                let jobsToShow = [];
-                
-                if (userId) {
-                    const userEmployerId = userId.toString();
-                    // Filter jobs của employer đang đăng nhập
-                    const employerJobs = data.filter(job => {
-                        const jobEmployerId = job.employerId?.toString();
-                        return jobEmployerId === userEmployerId;
-                    });
-                    
-                    // Nếu không có jobs sau filter, có thể là jobs cũ không có employerId
-                    // Trong trường hợp này, hiển thị tất cả jobs
-                    jobsToShow = employerJobs.length > 0 ? employerJobs : data;
-                } else {
-                    // Không có userId, hiển thị tất cả jobs
-                    jobsToShow = data;
-                }
+                // API đã filter sẵn, chỉ trả về jobs của employer này
+                const jobsToShow = data || [];
                 
                 // Fetch số lượng ứng viên cho mỗi job
                 try {
-                    const appResponse = await fetch("http://localhost:8080/application/all-application");
-                    const allApplications = await appResponse.json();
-                    
-                    console.log('All applications:', allApplications);
-                    
-                    const jobsWithCounts = jobsToShow.map(job => {
-                        const jobId = String(job._id || '').trim();
-                        // So sánh linh hoạt: cả string và ObjectId
-                        const applications = allApplications.filter(app => {
-                            const appJobID = String(app.jobID || '').trim();
-                            return appJobID === jobId || 
-                                   String(app.jobID) === String(job._id) ||
-                                   app.jobID === job._id;
-                        });
-                        
-                        console.log(`Job ${job.jobTitle} (${jobId}): ${applications.length} applications`);
-                        
-                        return {
-                            ...job,
-                            applicationsCount: applications.length
-                        };
+                    const appResponse = await fetch("http://localhost:8080/application/all-application", {
+                        headers: {
+                            'Authorization': token.startsWith('Bearer') ? token : `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
                     });
                     
-                    setJobs(jobsWithCounts);
-                    setFilteredJobs(jobsWithCounts);
+                    if (appResponse.ok) {
+                        const allApplications = await appResponse.json();
+                        
+                        console.log('All applications:', allApplications);
+                        
+                        const jobsWithCounts = jobsToShow.map(job => {
+                            const jobId = String(job._id || '').trim();
+                            // So sánh linh hoạt: cả string và ObjectId
+                            const applications = allApplications.filter(app => {
+                                const appJobID = String(app.jobID || '').trim();
+                                return appJobID === jobId || 
+                                       String(app.jobID) === String(job._id) ||
+                                       app.jobID === job._id;
+                            });
+                            
+                            console.log(`Job ${job.jobTitle} (${jobId}): ${applications.length} applications`);
+                            
+                            return {
+                                ...job,
+                                applicationsCount: applications.length
+                            };
+                        });
+                        
+                        setJobs(jobsWithCounts);
+                        setFilteredJobs(jobsWithCounts);
+                    } else {
+                        // Nếu không lấy được applications, vẫn hiển thị jobs nhưng không có count
+                        setJobs(jobsToShow);
+                        setFilteredJobs(jobsToShow);
+                    }
                 } catch (appError) {
                     console.error('Error fetching applications:', appError);
+                    // Nếu có lỗi, vẫn hiển thị jobs nhưng không có count
                     setJobs(jobsToShow);
                     setFilteredJobs(jobsToShow);
                 }
             } catch (error) {
                 console.error("Error fetching jobs:", error);
+                toast.error('Không thể tải danh sách công việc. Vui lòng thử lại sau');
                 setJobs([]);
                 setFilteredJobs([]);
             } finally {
@@ -115,7 +123,7 @@ export const AllJobs = () => {
         };
 
         fetchJobs();
-    }, [loginData]);
+    }, [loginData, navigate]);
 
     // Filter jobs
     useEffect(() => {

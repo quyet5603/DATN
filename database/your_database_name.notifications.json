@@ -1,0 +1,243 @@
+[{
+  "_id": {
+    "$oid": "695e9725df91ce6f14c858fa"
+  },
+  "userId": {
+    "$oid": "695aa0562a6ab27203b88801"
+  },
+  "type": "application_status",
+  "title": "Cập nhật trạng thái ứng tuyển",
+  "message": "Chúc mừng! Đơn ứng tuyển của bạn đã được chấp nhận",
+  "jobId": {
+    "$oid": "695aa2c0243d7acf90212820"
+  },
+  "jobTitle": "Lập trình viên Frontend React",
+  "applicationId": {
+    "$oid": "695aa345243d7acf90212856"
+  },
+  "link": "/my-jobs",
+  "isRead": false,
+  "createdAt": {
+    "$date": "2026-01-07T17:25:57.511Z"
+  },
+  "updatedAt": {
+    "$date": "2026-01-07T17:25:57.511Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "695e9729df91ce6f14c8591b"
+  },
+  "userId": {
+    "$oid": "695aa0562a6ab27203b88801"
+  },
+  "type": "application_status",
+  "title": "Cập nhật trạng thái ứng tuyển",
+  "message": "Rất tiếc, đơn ứng tuyển của bạn đã bị từ chối",
+  "jobId": {
+    "$oid": "695aa2c0243d7acf90212820"
+  },
+  "jobTitle": "Lập trình viên Frontend React",
+  "applicationId": {
+    "$oid": "695aa345243d7acf90212856"
+  },
+  "link": "/my-jobs",
+  "isRead": false,
+  "createdAt": {
+    "$date": "2026-01-07T17:26:01.396Z"
+  },
+  "updatedAt": {
+    "$date": "2026-01-07T17:26:01.396Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "695e972bdf91ce6f14c8593c"
+  },
+  "userId": {
+    "$oid": "695aa0562a6ab27203b88801"
+  },
+  "type": "application_status",
+  "title": "Cập nhật trạng thái ứng tuyển",
+  "message": "Chúc mừng! Đơn ứng tuyển của bạn đã được chấp nhận",
+  "jobId": {
+    "$oid": "695aa2c0243d7acf90212820"
+  },
+  "jobTitle": "Lập trình viên Frontend React",
+  "applicationId": {
+    "$oid": "695aa345243d7acf90212856"
+  },
+  "link": "/my-jobs",
+  "isRead": false,
+  "createdAt": {
+    "$date": "2026-01-07T17:26:03.333Z"
+  },
+  "updatedAt": {
+    "$date": "2026-01-07T17:26:03.333Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "695e9737df91ce6f14c85972"
+  },
+  "userId": {
+    "$oid": "695aa0562a6ab27203b88801"
+  },
+  "type": "application_status",
+  "title": "Cập nhật trạng thái ứng tuyển",
+  "message": "Đơn ứng tuyển của bạn đã được xem xét",
+  "jobId": {
+    "$oid": "695aa2c0243d7acf90212820"
+  },
+  "jobTitle": "Lập trình viên Frontend React",
+  "applicationId": {
+    "$oid": "695aa345243d7acf90212856"
+  },
+  "link": "/my-jobs",
+  "isRead": false,
+  "createdAt": {
+    "$date": "2026-01-07T17:26:15.536Z"
+  },
+  "updatedAt": {
+    "$date": "2026-01-07T17:26:15.536Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "695e9739df91ce6f14c85993"
+  },
+  "userId": {
+    "$oid": "695aa0562a6ab27203b88801"
+  },
+  "type": "application_status",
+  "title": "Cập nhật trạng thái ứng tuyển",
+  "message": "Chúc mừng! Đơn ứng tuyển của bạn đã được chấp nhận",
+  "jobId": {
+    "$oid": "695aa2c0243d7acf90212820"
+  },
+  "jobTitle": "Lập trình viên Frontend React",
+  "applicationId": {
+    "$oid": "695aa345243d7acf90212856"
+  },
+  "link": "/my-jobs",
+  "isRead": false,
+  "createdAt": {
+    "$date": "2026-01-07T17:26:17.069Z"
+  },
+  "updatedAt": {
+    "$date": "2026-01-07T17:26:17.069Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "695e9742df91ce6f14c859e3"
+  },
+  "userId": {
+    "$oid": "695aa0562a6ab27203b88801"
+  },
+  "type": "application_status",
+  "title": "Cập nhật trạng thái ứng tuyển",
+  "message": "Rất tiếc, đơn ứng tuyển của bạn đã bị từ chối",
+  "jobId": {
+    "$oid": "695aa2c0243d7acf90212820"
+  },
+  "jobTitle": "Lập trình viên Frontend React",
+  "applicationId": {
+    "$oid": "695aa345243d7acf90212856"
+  },
+  "link": "/my-jobs",
+  "isRead": false,
+  "createdAt": {
+    "$date": "2026-01-07T17:26:26.832Z"
+  },
+  "updatedAt": {
+    "$date": "2026-01-07T17:26:26.832Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "695e9746df91ce6f14c85a33"
+  },
+  "userId": {
+    "$oid": "695aa0562a6ab27203b88801"
+  },
+  "type": "application_status",
+  "title": "Cập nhật trạng thái ứng tuyển",
+  "message": "Chúc mừng! Đơn ứng tuyển của bạn đã được chấp nhận",
+  "jobId": {
+    "$oid": "695aa2c0243d7acf90212820"
+  },
+  "jobTitle": "Lập trình viên Frontend React",
+  "applicationId": {
+    "$oid": "695aa345243d7acf90212856"
+  },
+  "link": "/my-jobs",
+  "isRead": false,
+  "createdAt": {
+    "$date": "2026-01-07T17:26:30.509Z"
+  },
+  "updatedAt": {
+    "$date": "2026-01-07T17:26:30.509Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "695e9a891f1b85960d8e8e11"
+  },
+  "userId": {
+    "$oid": "695aa0562a6ab27203b88801"
+  },
+  "type": "application_status",
+  "title": "Cập nhật trạng thái ứng tuyển",
+  "message": "Đơn ứng tuyển của bạn đã được xem xét",
+  "jobId": {
+    "$oid": "695aa2c0243d7acf90212820"
+  },
+  "jobTitle": "Lập trình viên Frontend React",
+  "applicationId": {
+    "$oid": "695aa345243d7acf90212856"
+  },
+  "link": "/my-jobs",
+  "isRead": false,
+  "createdAt": {
+    "$date": "2026-01-07T17:40:25.488Z"
+  },
+  "updatedAt": {
+    "$date": "2026-01-07T17:40:25.488Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "695e9a8a1f1b85960d8e8e32"
+  },
+  "userId": {
+    "$oid": "695aa0562a6ab27203b88801"
+  },
+  "type": "application_status",
+  "title": "Cập nhật trạng thái ứng tuyển",
+  "message": "Chúc mừng! Đơn ứng tuyển của bạn đã được chấp nhận",
+  "jobId": {
+    "$oid": "695aa2c0243d7acf90212820"
+  },
+  "jobTitle": "Lập trình viên Frontend React",
+  "applicationId": {
+    "$oid": "695aa345243d7acf90212856"
+  },
+  "link": "/my-jobs",
+  "isRead": false,
+  "createdAt": {
+    "$date": "2026-01-07T17:40:26.563Z"
+  },
+  "updatedAt": {
+    "$date": "2026-01-07T17:40:26.563Z"
+  },
+  "__v": 0
+}]

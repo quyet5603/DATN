@@ -1,6 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react'
 import { Outlet, NavLink, Link } from 'react-router-dom'
 import { LoginContext } from '../components/ContextProvider/Context.js';
+import { NotificationDropdown } from './NotificationDropdown.js';
 import 'boxicons';
 import logoURL from '../assets/img/logo.png';
 
@@ -183,13 +184,16 @@ export const Navbar = () => {
                     {
                         localStorage.getItem("usertoken") ?
                             <div className='hidden md:flex items-center gap-4 avatar-dropdown-container relative'>
+                                {/* Notification Bell */}
+                                <NotificationDropdown />
+                                
                                 {/* Avatar with Dropdown */}
                                 <div className='relative'>
                                     <button
                                         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                                         className='flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2 rounded-full transition-all hover:opacity-80'
                                     >
-                                        <div className='w-10 h-10 rounded-full overflow-hidden border-2 border-white hover:border-green-200 transition-colors'>
+                                        <div className='w-14 h-14 rounded-full overflow-hidden border-2 border-white hover:border-green-200 transition-colors cursor-pointer'>
                                             {avatarUrl ? (
                                                 <img
                                                     src={avatarUrl}
@@ -198,13 +202,13 @@ export const Navbar = () => {
                                                 />
                                             ) : (
                                                 <div className='w-full h-full bg-gray-200 flex items-center justify-center'>
-                                                    <box-icon name='user' size='24px' color='#6B7280'></box-icon>
+                                                    <box-icon name='user' size='36px' color='#6B7280'></box-icon>
                                                 </div>
                                             )}
                                         </div>
                                         <box-icon
                                             name={isDropdownOpen ? 'chevron-up' : 'chevron-down'}
-                                            size='16px'
+                                            size='18px'
                                             color='#ffffff'
                                         ></box-icon>
                                     </button>
@@ -215,7 +219,7 @@ export const Navbar = () => {
                                             {/* User Info Header */}
                                             <div className='px-4 py-3 border-b border-gray-200'>
                                                 <div className='flex items-center gap-3'>
-                                                    <div className='w-12 h-12 rounded-full overflow-hidden border-2 border-gray-200'>
+                                                    <div className='w-16 h-16 rounded-full overflow-hidden border-2 border-gray-200'>
                                                         {avatarUrl ? (
                                                             <img
                                                                 src={avatarUrl}
@@ -224,7 +228,7 @@ export const Navbar = () => {
                                                             />
                                                         ) : (
                                                             <div className='w-full h-full bg-gray-200 flex items-center justify-center'>
-                                                                <box-icon name='user' size='28px' color='#6B7280'></box-icon>
+                                                                <box-icon name='user' size='40px' color='#6B7280'></box-icon>
                                                             </div>
                                                         )}
                                                     </div>
@@ -403,7 +407,7 @@ export const Navbar = () => {
                                 <div className='mt-3'>
                                     {/* Mobile User Info */}
                                     <div className='flex items-center gap-3 mb-3 pb-3 border-b border-gray-300'>
-                                        <div className='w-12 h-12 rounded-full overflow-hidden border-2 border-gray-200'>
+                                        <div className='w-16 h-16 rounded-full overflow-hidden border-2 border-gray-200'>
                                             {avatarUrl ? (
                                                 <img
                                                     src={avatarUrl}
@@ -412,7 +416,7 @@ export const Navbar = () => {
                                                 />
                                             ) : (
                                                 <div className='w-full h-full bg-gray-200 flex items-center justify-center'>
-                                                    <box-icon name='user' size='28px' color='#6B7280'></box-icon>
+                                                    <box-icon name='user' size='40px' color='#6B7280'></box-icon>
                                                 </div>
                                             )}
                                         </div>

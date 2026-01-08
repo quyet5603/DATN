@@ -1,0 +1,218 @@
+[{
+  "_id": {
+    "$oid": "695aa2c0243d7acf90212820"
+  },
+  "jobID": "8d0rghd80mk0070un",
+  "jobTitle": "Lập trình viên Frontend React",
+  "employmentType": "Full-time",
+  "location": "Hà Nội",
+  "salary": "18-25 triệu",
+  "description": "Chúng tôi đang tìm kiếm một Lập trình viên Frontend có kinh nghiệm với React để tham gia đội ngũ phát triển sản phẩm.\n\nYÊU CẦU:\n- Từ 1-3 năm kinh nghiệm phát triển Frontend với React.js\n- Hiểu biết về JavaScript ES6+, HTML5, CSS3\n- Kinh nghiệm với các thư viện như Redux, React Router\n- Có kiến thức về RESTful API\n- Có khả năng làm việc nhóm và giao tiếp tốt\n\nMÔ TẢ CÔNG VIỆC:\n- Phát triển và bảo trì các ứng dụng web sử dụng React\n- Tối ưu hóa hiệu suất và trải nghiệm người dùng\n- Làm việc với backend team để tích hợp API\n- Code review và tham gia các cuộc họp kỹ thuật\n\nQUYỀN LỢI:\n- Lương thưởng cạnh tranh\n- Bảo hiểm đầy đủ\n- Môi trường làm việc trẻ trung, năng động\n",
+  "applicationForm": {
+    "question": [],
+    "answer": []
+  },
+  "applicants": [
+    {
+      "applicant": {
+        "$oid": "695aa0562a6ab27203b88801"
+      },
+      "status": "active",
+      "_id": {
+        "$oid": "695aa345243d7acf90212858"
+      }
+    },
+    {
+      "applicant": {
+        "$oid": "695aa0562a6ab27203b88801"
+      },
+      "status": "active",
+      "_id": {
+        "$oid": "695aa813046faeab05fe8f1f"
+      }
+    },
+    {
+      "applicant": {
+        "$oid": "695aa0562a6ab27203b88801"
+      },
+      "status": "active",
+      "_id": {
+        "$oid": "695aaa06b321085cb3f8ffad"
+      }
+    },
+    {
+      "applicant": {
+        "$oid": "695aa0562a6ab27203b88801"
+      },
+      "status": "active",
+      "_id": {
+        "$oid": "695aad5d66721adf7d137c13"
+      }
+    },
+    {
+      "applicant": {
+        "$oid": "695aa0562a6ab27203b88801"
+      },
+      "status": "active",
+      "_id": {
+        "$oid": "695aad6e66721adf7d137c5c"
+      }
+    },
+    {
+      "applicant": {
+        "$oid": "695aa0562a6ab27203b88801"
+      },
+      "status": "active",
+      "_id": {
+        "$oid": "695aae6dc5a8c03df67e1e55"
+      }
+    },
+    {
+      "applicant": {
+        "$oid": "695aa0562a6ab27203b88801"
+      },
+      "status": "active",
+      "_id": {
+        "$oid": "695aba573f4155d84614139d"
+      }
+    },
+    {
+      "applicant": {
+        "$oid": "695aa0562a6ab27203b88801"
+      },
+      "status": "active",
+      "_id": {
+        "$oid": "695e85585bc34c7108da3e3f"
+      }
+    }
+  ],
+  "requiredSkills": [],
+  "jobEmbedding": [],
+  "employerId": {
+    "$oid": "69550b94144dbb61f7f138e9"
+  },
+  "createdAt": {
+    "$date": "2026-01-04T17:26:24.532Z"
+  },
+  "updatedAt": {
+    "$date": "2026-01-07T19:56:14.870Z"
+  },
+  "__v": 0,
+  "benefits": "",
+  "category": "IT",
+  "deadline": {
+    "$date": "2025-01-01T00:00:00.000Z"
+  },
+  "educationRequirement": "Đại học",
+  "employeeType": "Thực tập sinh",
+  "experienceRequirement": "1 năm kinh nghiệm",
+  "genderRequirement": "Không yêu cầu",
+  "jobRequirement": "",
+  "level": "Intern",
+  "quantity": 1,
+  "specificAddress": "Tòa nhà Viettel"
+},
+{
+  "_id": {
+    "$oid": "695aa2ed243d7acf90212827"
+  },
+  "jobID": "8d0rghd80mk007zpc",
+  "jobTitle": "Backend Developer Node.js",
+  "employmentType": "Full-time",
+  "location": "TP.HCM",
+  "salary": "20-30 triệu",
+  "description": "Tìm kiếm Backend Developer có kinh nghiệm với Node.js để phát triển hệ thống API và microservices.\n\nYÊU CẦU:\n- Từ 2-4 năm kinh nghiệm phát triển Backend\n- Thành thạo Node.js, Express.js\n- Hiểu biết về MongoDB, MySQL/PostgreSQL\n- Kinh nghiệm với RESTful API, GraphQL\n- Có kiến thức về JWT authentication, security\n- Biết sử dụng Git, Docker là lợi thế\n\nMÔ TẢ CÔNG VIỆC:\n- Thiết kế và phát triển RESTful API\n- Xây dựng và tối ưu database\n- Triển khai authentication và authorization\n- Viết unit test và integration test\n- Tối ưu hóa hiệu suất hệ thống\n\nQUYỀN LỢI:\n- Lương: 20-30 triệu/tháng\n- Thưởng theo dự án\n- Đào tạo và phát triển kỹ năng\n- Làm việc remote linh hoạt",
+  "applicationForm": {
+    "question": [],
+    "answer": []
+  },
+  "applicants": [
+    {
+      "applicant": {
+        "$oid": "695aa0562a6ab27203b88801"
+      },
+      "status": "active",
+      "_id": {
+        "$oid": "695aaa9a0f7508e25048948f"
+      }
+    }
+  ],
+  "requiredSkills": [],
+  "jobEmbedding": [],
+  "employerId": {
+    "$oid": "69550b94144dbb61f7f138e9"
+  },
+  "createdAt": {
+    "$date": "2026-01-04T17:27:09.697Z"
+  },
+  "updatedAt": {
+    "$date": "2026-01-04T17:59:54.762Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "695aa331243d7acf90212835"
+  },
+  "jobID": "8d0rghd80mk009g2w",
+  "jobTitle": "UI/UX Designer",
+  "employmentType": "Full-time",
+  "location": "Đà Nẵng",
+  "salary": "15-20 triệu",
+  "description": "Tuyển dụng UI/UX Designer để thiết kế giao diện và trải nghiệm người dùng cho các sản phẩm web và mobile.\n\nYÊU CẦU:\n- Từ 1-3 năm kinh nghiệm thiết kế UI/UX\n- Thành thạo Figma, Adobe XD, Sketch\n- Có portfolio thể hiện khả năng thiết kế\n- Hiểu biết về design system, responsive design\n- Có tư duy về user experience\n\nMÔ TẢ CÔNG VIỆC:\n- Thiết kế wireframe, mockup, prototype\n- Nghiên cứu và phân tích nhu cầu người dùng\n- Làm việc với team phát triển để implement design\n- Cải thiện và tối ưu trải nghiệm người dùng\n- Tạo design system và style guide\n\nQUYỀN LỢI:\n- Lương cạnh tranh\n- Được làm việc với các dự án đa dạng\n- Cơ hội học hỏi và phát triển",
+  "applicationForm": {
+    "question": [],
+    "answer": []
+  },
+  "applicants": [
+    {
+      "applicant": {
+        "$oid": "695aa0562a6ab27203b88801"
+      },
+      "status": "active",
+      "_id": {
+        "$oid": "695aacde3c2cebb6ba7d1ac8"
+      }
+    }
+  ],
+  "requiredSkills": [],
+  "jobEmbedding": [],
+  "employerId": {
+    "$oid": "69550b94144dbb61f7f138e9"
+  },
+  "createdAt": {
+    "$date": "2026-01-04T17:28:17.577Z"
+  },
+  "updatedAt": {
+    "$date": "2026-01-04T18:09:34.450Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "695cd3d74a5a1c77250b509f"
+  },
+  "jobID": "8d0rghj1gmk2dppat",
+  "jobTitle": "UI/UX Designer",
+  "employmentType": "Part time",
+  "location": "Hà Nội",
+  "salary": "18-25 triệu",
+  "description": "mô tả",
+  "applicationForm": {
+    "question": [],
+    "answer": []
+  },
+  "applicants": [],
+  "requiredSkills": [],
+  "jobEmbedding": [],
+  "employerId": {
+    "$oid": "69550b94144dbb61f7f138e9"
+  },
+  "createdAt": {
+    "$date": "2026-01-06T09:20:23.401Z"
+  },
+  "updatedAt": {
+    "$date": "2026-01-06T09:20:23.401Z"
+  },
+  "__v": 0
+}]

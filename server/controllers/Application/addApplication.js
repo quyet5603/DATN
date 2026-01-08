@@ -1,5 +1,8 @@
 import Application from '../../models/Application.js'
+import Job from '../../models/Job.js'
+import User from '../../models/User.js'
 import uniqid from 'uniqid';
+import { notifyNewApplication } from '../Notification/createNotification.js';
 
 const addApplication = async (req, res) => {
     const { jobID, candidateID, applicationStatus, applicationForm, candidateFeedback } = req.body;
@@ -37,6 +40,20 @@ const addApplication = async (req, res) => {
         });
 
         await newApplication.save();
+
+        // Tạo thông báo cho employer khi có ứng viên mới apply
+        try {
+            const job = await Job.findById(jobID);
+            const candidate = await User.findById(candidateID);
+            
+            if (job && candidate && job.employerId) {
+                await notifyNewApplication(newApplication, job, candidate);
+            }
+        } catch (notifError) {
+            console.error('Error creating notification for employer:', notifError);
+            // Don't fail the request if notification fails
+        }
+
         res.status(201).json(newApplication);
     } catch (error) {
         console.error('Error in addApplication:', error);

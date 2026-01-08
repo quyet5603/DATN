@@ -107,63 +107,132 @@ export const CVManager = () => {
     const [selectedFile, setSelectedFile] = useState(null);
 
     useEffect(() => {
+        const loadUserData = async () => {
         const token = localStorage.getItem('usertoken');
-        const userStr = localStorage.getItem('user');
+            const userStr = localStorage.getItem('user');
         
-        if (!token || !userStr) {
+            if (!token || !userStr) {
             toast.error('Vui lòng đăng nhập để sử dụng tính năng này');
             navigate('/login');
             return;
         }
 
-        const userData = JSON.parse(userStr);
-        setUser(userData);
-        
-        // Load personal info
-        setPersonalInfo({
-            userName: userData.userName || '',
-            position: userData.position || '',
-            userEmail: userData.userEmail || '',
-            phoneNumber: userData.phoneNumber || '',
-            dateOfBirth: userData.dateOfBirth || '',
-            gender: userData.gender || '',
-            address: userData.address || '',
-            personalLink: userData.personalLink || ''
-        });
-        
-        // Load avatar
-        if (userData.avatar) {
-            const baseURL = API_BASE_URL.replace('/api', '').replace(/\/$/, '');
-            setAvatarPreview(`${baseURL}/uploads/${userData.avatar}`);
-        }
-        
-        // Load CV sections from localStorage (if exists)
-        const savedSections = localStorage.getItem('cvSections');
-        if (savedSections) {
-            try {
-                setSections(JSON.parse(savedSections));
-            } catch (e) {
-                console.error('Error parsing saved sections:', e);
+            let userData = JSON.parse(userStr);
+            setUser(userData);
+
+            // Fetch fresh user data from API to get latest cvSections from database
+        try {
+                const response = await fetch(`http://localhost:8080/users/user/${userData._id}`, {
+                headers: {
+                    'Authorization': token.startsWith('Bearer') ? token : `Bearer ${token}`
+                }
+            });
+
+                if (response.ok) {
+                    const freshUserData = await response.json();
+                    // Update localStorage with fresh data
+                    localStorage.setItem('user', JSON.stringify(freshUserData));
+                    userData = freshUserData;
+                    setUser(freshUserData);
+                }
+            } catch (error) {
+                console.error('Error fetching user data from API:', error);
+                // Continue with localStorage data if API fails
             }
-        }
-        
-        // Load CVs
-        fetchCVs();
-        setLoading(false);
+            
+            // Load personal info
+            setPersonalInfo({
+                userName: userData.userName || '',
+                position: userData.position || '',
+                userEmail: userData.userEmail || '',
+                phoneNumber: userData.phoneNumber || '',
+                dateOfBirth: userData.dateOfBirth || '',
+                gender: userData.gender || '',
+                address: userData.address || '',
+                personalLink: userData.personalLink || ''
+            });
+            
+            // Load avatar
+            if (userData.avatar) {
+                const baseURL = API_BASE_URL.replace('/api', '').replace(/\/$/, '');
+                setAvatarPreview(`${baseURL}/uploads/${userData.avatar}`);
+            }
+            
+            // Load CV sections - PRIORITY: from database (userData.cvSections)
+            if (userData.cvSections && Object.keys(userData.cvSections).length > 0) {
+                // Load from database
+                setSections({
+                    introduction: userData.cvSections.introduction || '',
+                    education: userData.cvSections.education || [],
+                    experience: userData.cvSections.experience || [],
+                    skills: userData.cvSections.skills || [],
+                    languages: userData.cvSections.languages || [],
+                    projects: userData.cvSections.projects || [],
+                    certificates: userData.cvSections.certificates || [],
+                    awards: userData.cvSections.awards || [],
+                    attachments: [] // attachments not stored in cvSections
+                });
+                // Also sync to localStorage with user-specific key
+                localStorage.setItem(`cvSections_${userData._id}`, JSON.stringify(userData.cvSections));
+                } else {
+                // Fallback: Load from localStorage with user-specific key
+                const savedSections = localStorage.getItem(`cvSections_${userData._id}`);
+                if (savedSections) {
+                    try {
+                        setSections(JSON.parse(savedSections));
+                    } catch (e) {
+                        console.error('Error parsing saved sections:', e);
+                    }
+                } else {
+                    // If no data found, initialize with empty sections
+                    setSections({
+                        introduction: '',
+                        education: [],
+                        experience: [],
+                        skills: [],
+                        languages: [],
+                        projects: [],
+                        certificates: [],
+                        awards: [],
+                        attachments: []
+                    });
+                }
+            }
+            
+            // Load CVs
+            fetchCVs();
+                setLoading(false);
+        };
+
+        loadUserData();
     }, [navigate]);
 
     const fetchCVs = async () => {
         try {
             const token = localStorage.getItem('usertoken');
-            const response = await fetch('http://localhost:8080/api/cv/list', {
+            if (!token) {
+                console.warn('No token found, skipping CV fetch');
+                return;
+            }
+            
+            const response = await fetch(`${API_BASE_URL}/api/cv/list`, {
                 headers: {
-                    'Authorization': token.startsWith('Bearer') ? token : `Bearer ${token}`
+                    'Authorization': token.startsWith('Bearer ') ? token : `Bearer ${token}`
                 }
             });
 
             if (response.ok) {
                 const data = await response.json();
                 setCvs(data.cvs || []);
+            } else if (response.status === 401) {
+                // Token expired or invalid
+                console.error('Unauthorized - token may be expired');
+                toast.error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+                localStorage.removeItem('usertoken');
+                localStorage.removeItem('user');
+                navigate('/login');
+            } else {
+                console.error('Error fetching CVs:', response.status, response.statusText);
             }
         } catch (error) {
             console.error('Error fetching CVs:', error);
@@ -176,9 +245,9 @@ export const CVManager = () => {
             const userStr = localStorage.getItem('user');
             if (!token || !userStr) {
                 console.warn('No token or user data found, skipping save to DB');
-                return;
-            }
-            
+            return;
+        }
+
             const userData = JSON.parse(userStr);
             
             // Validate required fields (check for both undefined/null and empty string)
@@ -191,9 +260,9 @@ export const CVManager = () => {
                 // Try to fetch user data from API if localStorage is incomplete
                 try {
                     const fetchResponse = await fetch(`http://localhost:8080/users/user/${userData._id}`, {
-                        headers: {
-                            'Authorization': token.startsWith('Bearer') ? token : `Bearer ${token}`
-                        }
+                headers: {
+                    'Authorization': token.startsWith('Bearer') ? token : `Bearer ${token}`
+                }
                     });
                     if (fetchResponse.ok) {
                         const fetchedUser = await fetchResponse.json();
@@ -240,7 +309,7 @@ export const CVManager = () => {
                 },
                 body: JSON.stringify(requestBody)
             });
-            
+
             if (response.ok) {
                 const result = await response.json();
                 if (result.user) {
@@ -346,9 +415,14 @@ export const CVManager = () => {
     };
 
     const handleSaveIntroduction = (intro) => {
+        const userStr = localStorage.getItem('user');
+        if (!userStr) return;
+        const userData = JSON.parse(userStr);
+        const userId = userData._id;
+        
         const updatedSections = { ...sections, introduction: intro };
         setSections(updatedSections);
-        localStorage.setItem('cvSections', JSON.stringify(updatedSections));
+        localStorage.setItem(`cvSections_${userId}`, JSON.stringify(updatedSections));
         saveCVSectionsToDB(updatedSections);
         setShowIntroductionModal(false);
         toast.success('Đã lưu giới thiệu bản thân');
@@ -359,19 +433,24 @@ export const CVManager = () => {
             toast.error('Vui lòng điền đầy đủ thông tin');
             return;
         }
+        const userStr = localStorage.getItem('user');
+        if (!userStr) return;
+        const userData = JSON.parse(userStr);
+        const userId = userData._id;
+        
         // Ghi đè: chỉ giữ lại mục mới nhất, thay thế toàn bộ mảng
         const updatedSections = {
             ...sections,
             education: [{ ...educationForm, id: Date.now() }]
         };
         setSections(updatedSections);
-        localStorage.setItem('cvSections', JSON.stringify(updatedSections));
+        localStorage.setItem(`cvSections_${userId}`, JSON.stringify(updatedSections));
         saveCVSectionsToDB(updatedSections);
         setEducationForm({ school: '', major: '', isCurrent: false, from: '', to: '' });
         setShowEducationModal(false);
         // Force re-render by reloading from localStorage
         setTimeout(() => {
-            const saved = localStorage.getItem('cvSections');
+            const saved = localStorage.getItem(`cvSections_${userId}`);
             if (saved) {
                 try {
                     setSections(JSON.parse(saved));
@@ -388,19 +467,24 @@ export const CVManager = () => {
             toast.error('Vui lòng điền đầy đủ thông tin');
             return;
         }
+        const userStr = localStorage.getItem('user');
+        if (!userStr) return;
+        const userData = JSON.parse(userStr);
+        const userId = userData._id;
+        
         // Ghi đè: chỉ giữ lại mục mới nhất, thay thế toàn bộ mảng
         const updatedSections = {
             ...sections,
             experience: [{ ...experienceForm, id: Date.now() }]
         };
         setSections(updatedSections);
-        localStorage.setItem('cvSections', JSON.stringify(updatedSections));
+        localStorage.setItem(`cvSections_${userId}`, JSON.stringify(updatedSections));
         saveCVSectionsToDB(updatedSections);
         setExperienceForm({ company: '', position: '', isCurrent: false, from: '', to: '', description: '', projects: '' });
         setShowExperienceModal(false);
         // Force re-render by reloading from localStorage
         setTimeout(() => {
-            const saved = localStorage.getItem('cvSections');
+            const saved = localStorage.getItem(`cvSections_${userId}`);
             if (saved) {
                 try {
                     setSections(JSON.parse(saved));
@@ -417,12 +501,17 @@ export const CVManager = () => {
             toast.error('Vui lòng chọn kỹ năng');
             return;
         }
+        const userStr = localStorage.getItem('user');
+        if (!userStr) return;
+        const userData = JSON.parse(userStr);
+        const userId = userData._id;
+        
         const updatedSections = {
             ...sections,
             skills: [...sections.skills, { ...skillForm, id: Date.now() }]
         };
         setSections(updatedSections);
-        localStorage.setItem('cvSections', JSON.stringify(updatedSections));
+        localStorage.setItem(`cvSections_${userId}`, JSON.stringify(updatedSections));
         saveCVSectionsToDB(updatedSections);
         setSkillForm({ skill: '', experience: '' });
         toast.success('Đã thêm kỹ năng');
@@ -433,12 +522,17 @@ export const CVManager = () => {
             toast.error('Vui lòng chọn ngôn ngữ');
             return;
         }
+        const userStr = localStorage.getItem('user');
+        if (!userStr) return;
+        const userData = JSON.parse(userStr);
+        const userId = userData._id;
+        
         const updatedSections = {
             ...sections,
             languages: [...sections.languages, { ...languageForm, id: Date.now() }]
         };
         setSections(updatedSections);
-        localStorage.setItem('cvSections', JSON.stringify(updatedSections));
+        localStorage.setItem(`cvSections_${userId}`, JSON.stringify(updatedSections));
         saveCVSectionsToDB(updatedSections);
         setLanguageForm({ language: '', level: 'Sơ cấp' });
         toast.success('Đã thêm ngôn ngữ');
@@ -449,12 +543,17 @@ export const CVManager = () => {
             toast.error('Vui lòng điền tên dự án');
             return;
         }
+        const userStr = localStorage.getItem('user');
+        if (!userStr) return;
+        const userData = JSON.parse(userStr);
+        const userId = userData._id;
+        
         const updatedSections = {
             ...sections,
             projects: [...sections.projects, { ...projectForm, id: Date.now() }]
         };
         setSections(updatedSections);
-        localStorage.setItem('cvSections', JSON.stringify(updatedSections));
+        localStorage.setItem(`cvSections_${userId}`, JSON.stringify(updatedSections));
         saveCVSectionsToDB(updatedSections);
         setProjectForm({ name: '', isCurrent: false, startMonth: '', startYear: '', endMonth: '', endYear: '', description: '', link: '' });
         setShowProjectsModal(false);
@@ -466,12 +565,17 @@ export const CVManager = () => {
             toast.error('Vui lòng điền đầy đủ thông tin');
             return;
         }
+        const userStr = localStorage.getItem('user');
+        if (!userStr) return;
+        const userData = JSON.parse(userStr);
+        const userId = userData._id;
+        
         const updatedSections = {
             ...sections,
             certificates: [...sections.certificates, { ...certificateForm, id: Date.now() }]
         };
         setSections(updatedSections);
-        localStorage.setItem('cvSections', JSON.stringify(updatedSections));
+        localStorage.setItem(`cvSections_${userId}`, JSON.stringify(updatedSections));
         saveCVSectionsToDB(updatedSections);
         setCertificateForm({ name: '', organization: '', year: '' });
         setShowCertificatesModal(false);
@@ -483,12 +587,17 @@ export const CVManager = () => {
             toast.error('Vui lòng điền đầy đủ thông tin');
             return;
         }
+        const userStr = localStorage.getItem('user');
+        if (!userStr) return;
+        const userData = JSON.parse(userStr);
+        const userId = userData._id;
+        
         const updatedSections = {
             ...sections,
             awards: [...sections.awards, { ...awardForm, id: Date.now() }]
         };
         setSections(updatedSections);
-        localStorage.setItem('cvSections', JSON.stringify(updatedSections));
+        localStorage.setItem(`cvSections_${userId}`, JSON.stringify(updatedSections));
         saveCVSectionsToDB(updatedSections);
         setAwardForm({ name: '', organization: '', year: '', description: '' });
         setShowAwardsModal(false);
@@ -520,30 +629,142 @@ export const CVManager = () => {
         
         try {
             const token = localStorage.getItem('usertoken');
-            const formData = new FormData();
-            formData.append('file', selectedFile);
-            formData.append('cvName', selectedFile.name);
+            if (!token) {
+                toast.error('Vui lòng đăng nhập để upload CV');
+                navigate('/login');
+                return;
+            }
             
-            const response = await fetch('http://localhost:8080/api/cv/upload', {
+            const formData = new FormData();
+            formData.append('cv', selectedFile); // Backend expects 'cv' field name
+            formData.append('cvName', selectedFile.name);
+            formData.append('isDefault', 'false'); // Default to false
+            
+            const response = await fetch(`${API_BASE_URL}/api/cv/upload`, {
                 method: 'POST',
                 headers: {
-                    'Authorization': token.startsWith('Bearer') ? token : `Bearer ${token}`
+                    'Authorization': token.startsWith('Bearer ') ? token : `Bearer ${token}`
+                    // Don't set Content-Type for FormData - browser will set it with boundary
                 },
                 body: formData
             });
 
             if (response.ok) {
+                const result = await response.json();
                 toast.success('Upload CV thành công');
                 setSelectedFile(null);
-                setShowAttachmentsModal(false);
-                fetchCVs();
+                fetchCVs(); // Refresh CV list
+            } else if (response.status === 401) {
+                // Token expired or invalid
+                toast.error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+                localStorage.removeItem('usertoken');
+                localStorage.removeItem('user');
+                navigate('/login');
             } else {
-                toast.error('Upload thất bại');
+                const errorData = await response.json().catch(() => ({ error: 'Upload thất bại' }));
+                toast.error(errorData.error || 'Upload thất bại');
+                console.error('Upload CV error:', response.status, errorData);
             }
         } catch (error) {
             console.error('Error uploading file:', error);
+            toast.error('Có lỗi xảy ra khi upload CV');
+        }
+    };
+
+    const handleSetDefaultCV = async (cvId) => {
+        try {
+            const token = localStorage.getItem('usertoken');
+            if (!token) {
+                toast.error('Vui lòng đăng nhập');
+                return;
+            }
+
+            const response = await fetch(`${API_BASE_URL}/api/cv/set-default/${cvId}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': token.startsWith('Bearer ') ? token : `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                toast.success('Đã đặt CV làm mặc định');
+                fetchCVs(); // Refresh CV list
+            } else if (response.status === 401) {
+                toast.error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+                localStorage.removeItem('usertoken');
+                localStorage.removeItem('user');
+                navigate('/login');
+            } else {
+                const errorData = await response.json().catch(() => ({ error: 'Không thể đặt CV mặc định' }));
+                toast.error(errorData.error || 'Không thể đặt CV mặc định');
+            }
+        } catch (error) {
+            console.error('Error setting default CV:', error);
             toast.error('Có lỗi xảy ra');
         }
+    };
+
+    const handleDeleteCV = async (cvId) => {
+        if (!window.confirm('Bạn có chắc chắn muốn xóa CV này không?')) {
+            return;
+        }
+
+        try {
+            const token = localStorage.getItem('usertoken');
+            if (!token) {
+                toast.error('Vui lòng đăng nhập');
+                return;
+            }
+
+            const response = await fetch(`${API_BASE_URL}/api/cv/delete/${cvId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': token.startsWith('Bearer ') ? token : `Bearer ${token}`
+                }
+            });
+
+            if (response.ok) {
+                toast.success('Đã xóa CV thành công');
+                fetchCVs(); // Refresh CV list
+            } else if (response.status === 401) {
+                toast.error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+                localStorage.removeItem('usertoken');
+                localStorage.removeItem('user');
+                navigate('/login');
+            } else {
+                const errorData = await response.json().catch(() => ({ error: 'Không thể xóa CV' }));
+                toast.error(errorData.error || 'Không thể xóa CV');
+            }
+        } catch (error) {
+            console.error('Error deleting CV:', error);
+            toast.error('Có lỗi xảy ra');
+        }
+    };
+
+    const handleViewCV = (cv) => {
+        if (!cv.cvFilePath) {
+            toast.error('CV không có file để xem');
+            return;
+        }
+        const baseURL = API_BASE_URL.replace('/api', '').replace(/\/$/, '');
+        const cvUrl = `${baseURL}/uploads/${cv.cvFilePath}`;
+        window.open(cvUrl, '_blank');
+    };
+
+    const handleDownloadCV = (cv) => {
+        if (!cv.cvFilePath) {
+            toast.error('CV không có file để tải xuống');
+            return;
+        }
+        const baseURL = API_BASE_URL.replace('/api', '').replace(/\/$/, '');
+        const cvUrl = `${baseURL}/uploads/${cv.cvFilePath}`;
+        const link = document.createElement('a');
+        link.href = cvUrl;
+        link.download = cv.cvName || 'CV.pdf';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     };
 
     const defaultCV = cvs.find(cv => cv.isDefault) || cvs[0];
@@ -732,12 +953,18 @@ export const CVManager = () => {
                         setIntroduction={(intro) => {
                             const updatedSections = { ...sections, introduction: intro };
                             setSections(updatedSections);
-                            localStorage.setItem('cvSections', JSON.stringify(updatedSections));
+                            const userStr = localStorage.getItem('user');
+                            if (userStr) {
+                                const userData = JSON.parse(userStr);
+                                const userId = userData._id;
+                                localStorage.setItem(`cvSections_${userId}`, JSON.stringify(updatedSections));
+                            }
                         }}
                         onClose={() => {
                             setShowIntroductionModal(false);
                             // Reload from localStorage to ensure sync
-                            const savedSections = localStorage.getItem('cvSections');
+                            const userStr = localStorage.getItem('user');
+                            const savedSections = userStr ? localStorage.getItem(`cvSections_${JSON.parse(userStr)._id}`) : null;
                             if (savedSections) {
                                 try {
                                     setSections(JSON.parse(savedSections));
@@ -818,9 +1045,17 @@ export const CVManager = () => {
                 {showAttachmentsModal && (
                     <AttachmentsModal
                         selectedFile={selectedFile}
+                        cvs={cvs}
                         onFileChange={handleFileUpload}
-                        onClose={() => setShowAttachmentsModal(false)}
+                        onClose={() => {
+                            setShowAttachmentsModal(false);
+                            setSelectedFile(null);
+                        }}
                         onUpload={handleUploadAttachment}
+                        onSetDefault={handleSetDefaultCV}
+                        onDelete={handleDeleteCV}
+                        onView={handleViewCV}
+                        onDownload={handleDownloadCV}
                     />
                 )}
                 </div>
@@ -852,7 +1087,7 @@ const SectionCard = ({ title, subtitle, content, onEdit }) => {
             >
                 <box-icon name='plus' size='24px' color='#ffffff'></box-icon>
             </button>
-        </div>
+                    </div>
     );
 };
 
@@ -1632,51 +1867,149 @@ const AwardsModal = ({ form, setForm, onClose, onSave }) => {
 };
 
 // Attachments Modal
-const AttachmentsModal = ({ selectedFile, onFileChange, onClose, onUpload }) => {
+const AttachmentsModal = ({ selectedFile, cvs = [], onFileChange, onClose, onUpload, onSetDefault, onDelete, onView, onDownload }) => {
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg max-w-2xl w-full">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={onClose}>
+            <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
                 <div className="p-6">
-                    <h2 className="text-2xl font-bold mb-4">Hồ sơ đính kèm</h2>
-                    <hr className="mb-4" />
-                    <p className="text-sm text-gray-600 mb-4">Chấp nhận file: PDF, DOC, DOCX (Tối đa 5MB)</p>
-                    
-                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center mb-4">
-                        <box-icon name='file-blank' size='48px' color='#9CA3AF' className="mb-4"></box-icon>
-                        <p className="font-bold text-gray-800 mb-2">Click hoặc kéo file vào đây để upload</p>
-                        <p className="text-sm text-gray-500">PDF, DOC, DOCX (tối đa 5MB)</p>
-                        <input
-                            type="file"
-                            accept=".pdf,.doc,.docx"
-                            onChange={onFileChange}
-                            className="hidden"
-                            id="file-upload"
-                        />
-                        <label
-                            htmlFor="file-upload"
-                            className="inline-block mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 cursor-pointer"
-                        >
-                            Chọn file
-                        </label>
-                        {selectedFile && (
-                            <p className="mt-2 text-sm text-gray-600">Đã chọn: {selectedFile.name}</p>
-                        )}
-                    </div>
-                    
-                    <div className="flex justify-end gap-4 pt-4 border-t">
+                    <div className="flex items-center justify-between mb-6">
+                        <h2 className="text-2xl font-bold text-gray-800">Quản lý CV đã upload</h2>
                         <button
                             onClick={onClose}
-                            className="px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600"
+                            className="text-gray-400 hover:text-gray-600 transition-colors"
                         >
-                            Hủy bỏ
+                            <box-icon name='x' size='28px'></box-icon>
                         </button>
-                        <button
-                            onClick={onUpload}
-                            disabled={!selectedFile}
-                            className="px-6 py-2 bg-gray-400 text-white rounded-lg hover:bg-gray-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            Upload
-                        </button>
+                    </div>
+
+                    {/* Danh sách CV đã upload */}
+                    {cvs.length > 0 && (
+                        <div className="mb-6">
+                            <h3 className="text-lg font-semibold text-gray-700 mb-3">CV đã upload ({cvs.length})</h3>
+                            <div className="space-y-3">
+                                {cvs.map((cv) => (
+                                    <div
+                                        key={cv._id}
+                                        className={`border rounded-lg p-4 transition-all ${
+                                            cv.isDefault
+                                                ? 'border-blue-500 bg-blue-50 shadow-sm'
+                                                : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm'
+                                        }`}
+                                    >
+                                        <div className="flex items-start justify-between gap-4">
+                                            <div className="flex items-start gap-3 flex-1">
+                                                <div className="mt-1">
+                                                    <box-icon name='file-pdf' type='solid' color={cv.isDefault ? '#3B82F6' : '#DC2626'} size='32px'></box-icon>
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="flex items-center gap-2 mb-1">
+                                                        <h4 className="font-semibold text-gray-800 truncate">{cv.cvName || 'CV'}</h4>
+                                                        {cv.isDefault && (
+                                                            <span className="px-2 py-0.5 bg-blue-600 text-white text-xs font-medium rounded-full whitespace-nowrap">
+                                                                Mặc định
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    <p className="text-sm text-gray-500">
+                                                        Upload: {cv.uploadedAt ? new Date(cv.uploadedAt).toLocaleDateString('vi-VN', {
+                                                            year: 'numeric',
+                                                            month: 'long',
+                                                            day: 'numeric',
+                                                            hour: '2-digit',
+                                                            minute: '2-digit'
+                                                        }) : 'N/A'}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center gap-2 flex-shrink-0">
+                                                {!cv.isDefault && (
+                                                    <button
+                                                        onClick={() => onSetDefault(cv._id)}
+                                                        className="px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
+                                                        title="Đặt làm CV mặc định"
+                                                    >
+                                                        <box-icon name='star' size='16px' color='#3B82F6'></box-icon>
+                                                    </button>
+                                                )}
+                                                <button
+                                                    onClick={() => onView(cv)}
+                                                    className="px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                                                    title="Xem CV"
+                                                >
+                                                    <box-icon name='show' size='16px' color='#374151'></box-icon>
+                                                </button>
+                                                <button
+                                                    onClick={() => onDownload(cv)}
+                                                    className="px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                                                    title="Tải xuống"
+                                                >
+                                                    <box-icon name='download' size='16px' color='#374151'></box-icon>
+                                                </button>
+                                                <button
+                                                    onClick={() => onDelete(cv._id)}
+                                                    className="px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors"
+                                                    title="Xóa CV"
+                                                >
+                                                    <box-icon name='trash' size='16px' color='#DC2626'></box-icon>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Upload section */}
+                    <div className="border-t pt-6">
+                        <h3 className="text-lg font-semibold text-gray-700 mb-3">Upload CV mới</h3>
+                        <p className="text-sm text-gray-600 mb-4">Chấp nhận file: PDF, DOC, DOCX (Tối đa 5MB)</p>
+                        
+                        <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+                            <box-icon name='cloud-upload' size='48px' color='#9CA3AF' className="mb-3"></box-icon>
+                            <p className="font-semibold text-gray-800 mb-1">Click hoặc kéo file vào đây để upload</p>
+                            <p className="text-sm text-gray-500 mb-4">PDF, DOC, DOCX (tối đa 5MB)</p>
+                            <input
+                                type="file"
+                                accept=".pdf,.doc,.docx"
+                                onChange={onFileChange}
+                                className="hidden"
+                                id="file-upload"
+                            />
+                            <label
+                                htmlFor="file-upload"
+                                className="inline-block px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 cursor-pointer transition-colors font-medium"
+                            >
+                                Chọn file
+                            </label>
+                            {selectedFile && (
+                                <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+                                    <div className="flex items-center justify-center gap-2">
+                                        <box-icon name='file' size='20px' color='#6B7280'></box-icon>
+                                        <p className="text-sm text-gray-700 font-medium">{selectedFile.name}</p>
+                                        <span className="text-xs text-gray-500">
+                                            ({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)
+                                        </span>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                        
+                        <div className="flex justify-end gap-3 mt-6">
+                            <button
+                                onClick={onClose}
+                                className="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium"
+                            >
+                                Đóng
+                            </button>
+                            <button
+                                onClick={onUpload}
+                                disabled={!selectedFile}
+                                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
+                            >
+                                Upload CV
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>

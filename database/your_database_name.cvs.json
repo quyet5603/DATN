@@ -1,0 +1,145 @@
+[{
+  "_id": {
+    "$oid": "695ab33d6986619202c7a0fa"
+  },
+  "userId": {
+    "$oid": "695aa0562a6ab27203b88801"
+  },
+  "cvName": "CV",
+  "cvFilePath": "resume/cv_695aa0562a6ab27203b88801_1767551804911.pdf",
+  "cvText": "NGUY ỄN VĂN A  \nFrontend Developer  \nEmail: nguyenvana@test.com | Phone: +84 123 456 789 | Hà N ội, Việt Nam  \n \n─────────────────────────────────────────────────────\n────  \n \nTÓM T ẮT \nFrontend Developer v ới 3 năm kinh nghi ệm phát tri ển ứng dụng web s ử dụng React, \nJavaScript, HTML/CSS.  \nĐã tham gia phát tri ển 5+ d ự án lớn, tăng hi ệu suất tải trang lên 40%.  \nCó kh ả năng làm vi ệc nhóm, tư duy sáng t ạo và gi ải quy ết vấn đề tốt.  \nMong mu ốn đóng góp cho đ ội ngũ phát tri ển sản phẩm công ngh ệ cao. \n \n─────────────────────────────────────────────────────\n────  \n \nKỸ NĂNG  \nReact, JavaScript, TypeScript, HTML5, CSS3, Node.js, Git, RESTful API,  \nResponsive Design, UI/UX Design, Redux, React Hooks, Tailwind CSS  \n \n─────────────────────────────────────────────────────\n────  \n \nKINH NGHI ỆM LÀM VI ỆC \n \nCông ty ABC / Frontend Developer / Hà N ội \nTháng 6 2021 - Hiện tại \n \n• Phát tri ển và b ảo trì ứng dụng web s ử dụng React và TypeScript  \n• Tối ưu hóa hi ệu suất, giảm thời gian t ải trang t ừ 5s xu ống 2s  \n• Làm vi ệc với team 5 ngư ời, thực hiện code review và mentoring junior developers  \n• Xây d ựng component library tái s ử dụng, gi ảm thời gian phát tri ển 30%  \n• Tích h ợp API v ới backend, x ử lý state management v ới Redux  \n \nCông ty XYZ / Junior Developer / TP.HCM  \nTháng 1 2020 - Tháng 5 2021  \n \n• Phát tri ển giao di ện ngư ời dùng v ới HTML, CSS, JavaScript  \n• Hỗ trợ debug và fix bugs trong các d ự án hi ện có \n• Tham gia phát tri ển landing pages và responsive websites  \n• Học hỏi và áp d ụng các best practices trong phát tri ển web  \n \n─────────────────────────────────────────────────────\n────  \n \nHỌC VẤN \n \nĐại học Bách Khoa Hà N ội / Cử nhân Công ngh ệ Thông tin / Hà N ội \nTháng 9 2016 - Tháng 6 2020  \n \n• Điểm trung bình: 3.5/4.0  \n• Chuyên ngành: Phát tri ển phần mềm \n• Đồ án tốt nghi ệp: Xây d ựng hệ thống qu ản lý bán hàng online v ới React và Node.js  \n \n─────────────────────────────────────────────────────\n────  \n \nKHÓA H ỌC & CH ỨNG CH Ỉ \n \nReact - The Complete Guide / Udemy  \nTháng 3 2021 - Tháng 5 2021  \n \n• Hoàn thành khóa h ọc 50+ gi ờ về React, Redux, React Hooks  \n• Xây d ựng 3 d ự án th ực tế trong khóa h ọc \n \nJavaScript Algorithms and Data Structures / freeCodeCamp  \nTháng 1 2020 - Tháng 2 2020  \n \n• Chứng ch ỉ hoàn thành khóa h ọc về algorithms và data structures  \n \n─────────────────────────────────────────────────────\n────  \n \nNGÔN NG Ữ \n \nTiếng Vi ệt / Bản ngữ \nTiếng Anh / Thành th ạo (TOEIC 850)  \n \n─────────────────────────────────────────────────────\n────  \n \nLIÊN K ẾT \n \nGitHub: https://github.com/nguyenvana  \nLinkedIn: https://linkedin.com/in/nguyenvana  \nPortfolio: https://nguyenvana.dev  \n \n─────────────────────────────────────────────────────\n────  \n \nSỞ THÍCH  \n \nĐọc sách công ngh ệ, Tham gia hackathon, Chơi c ầu lông, Đóng góp cho open source \nprojects",
+  "isActive": false,
+  "isDefault": false,
+  "cvAnalysis": {
+    "skills": [],
+    "strengths": [],
+    "weaknesses": []
+  },
+  "cvEmbedding": [],
+  "uploadedAt": {
+    "$date": "2026-01-04T18:36:45.157Z"
+  },
+  "updatedAt": {
+    "$date": "2026-01-04T19:02:44.776Z"
+  },
+  "createdAt": {
+    "$date": "2026-01-04T18:36:45.161Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "695ab9543f4155d846140fdf"
+  },
+  "userId": {
+    "$oid": "695aa0562a6ab27203b88801"
+  },
+  "cvName": "CV",
+  "cvFilePath": "resume/cv_695aa0562a6ab27203b88801_1767553364599.pdf",
+  "cvText": "NGUY ỄN VĂN A  \nFrontend Developer  \nEmail: nguyenvana@test.com | Phone: +84 123 456 789 | Hà N ội, Việt Nam  \n \n─────────────────────────────────────────────────────\n────  \n \nTÓM T ẮT \nFrontend Developer v ới 3 năm kinh nghi ệm phát tri ển ứng dụng web s ử dụng React, \nJavaScript, HTML/CSS.  \nĐã tham gia phát tri ển 5+ d ự án lớn, tăng hi ệu suất tải trang lên 40%.  \nCó kh ả năng làm vi ệc nhóm, tư duy sáng t ạo và gi ải quy ết vấn đề tốt.  \nMong mu ốn đóng góp cho đ ội ngũ phát tri ển sản phẩm công ngh ệ cao. \n \n─────────────────────────────────────────────────────\n────  \n \nKỸ NĂNG  \nReact, JavaScript, TypeScript, HTML5, CSS3, Node.js, Git, RESTful API,  \nResponsive Design, UI/UX Design, Redux, React Hooks, Tailwind CSS  \n \n─────────────────────────────────────────────────────\n────  \n \nKINH NGHI ỆM LÀM VI ỆC \n \nCông ty ABC / Frontend Developer / Hà N ội \nTháng 6 2021 - Hiện tại \n \n• Phát tri ển và b ảo trì ứng dụng web s ử dụng React và TypeScript  \n• Tối ưu hóa hi ệu suất, giảm thời gian t ải trang t ừ 5s xu ống 2s  \n• Làm vi ệc với team 5 ngư ời, thực hiện code review và mentoring junior developers  \n• Xây d ựng component library tái s ử dụng, gi ảm thời gian phát tri ển 30%  \n• Tích h ợp API v ới backend, x ử lý state management v ới Redux  \n \nCông ty XYZ / Junior Developer / TP.HCM  \nTháng 1 2020 - Tháng 5 2021  \n \n• Phát tri ển giao di ện ngư ời dùng v ới HTML, CSS, JavaScript  \n• Hỗ trợ debug và fix bugs trong các d ự án hi ện có \n• Tham gia phát tri ển landing pages và responsive websites  \n• Học hỏi và áp d ụng các best practices trong phát tri ển web  \n \n─────────────────────────────────────────────────────\n────  \n \nHỌC VẤN \n \nĐại học Bách Khoa Hà N ội / Cử nhân Công ngh ệ Thông tin / Hà N ội \nTháng 9 2016 - Tháng 6 2020  \n \n• Điểm trung bình: 3.5/4.0  \n• Chuyên ngành: Phát tri ển phần mềm \n• Đồ án tốt nghi ệp: Xây d ựng hệ thống qu ản lý bán hàng online v ới React và Node.js  \n \n─────────────────────────────────────────────────────\n────  \n \nKHÓA H ỌC & CH ỨNG CH Ỉ \n \nReact - The Complete Guide / Udemy  \nTháng 3 2021 - Tháng 5 2021  \n \n• Hoàn thành khóa h ọc 50+ gi ờ về React, Redux, React Hooks  \n• Xây d ựng 3 d ự án th ực tế trong khóa h ọc \n \nJavaScript Algorithms and Data Structures / freeCodeCamp  \nTháng 1 2020 - Tháng 2 2020  \n \n• Chứng ch ỉ hoàn thành khóa h ọc về algorithms và data structures  \n \n─────────────────────────────────────────────────────\n────  \n \nNGÔN NG Ữ \n \nTiếng Vi ệt / Bản ngữ \nTiếng Anh / Thành th ạo (TOEIC 850)  \n \n─────────────────────────────────────────────────────\n────  \n \nLIÊN K ẾT \n \nGitHub: https://github.com/nguyenvana  \nLinkedIn: https://linkedin.com/in/nguyenvana  \nPortfolio: https://nguyenvana.dev  \n \n─────────────────────────────────────────────────────\n────  \n \nSỞ THÍCH  \n \nĐọc sách công ngh ệ, Tham gia hackathon, Chơi c ầu lông, Đóng góp cho open source \nprojects",
+  "isActive": true,
+  "isDefault": true,
+  "cvAnalysis": {
+    "skills": [],
+    "strengths": [],
+    "weaknesses": []
+  },
+  "cvEmbedding": [],
+  "uploadedAt": {
+    "$date": "2026-01-04T19:02:44.780Z"
+  },
+  "updatedAt": {
+    "$date": "2026-01-04T19:02:44.783Z"
+  },
+  "createdAt": {
+    "$date": "2026-01-04T19:02:44.783Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "695c7c8e8367383b24410642"
+  },
+  "userId": {
+    "$oid": "695c7b1e8367383b2441060c"
+  },
+  "cvName": "CV",
+  "cvFilePath": "resume/cv_695c7b1e8367383b2441060c_1767668878159.pdf",
+  "cvText": null,
+  "isActive": false,
+  "isDefault": false,
+  "cvAnalysis": {
+    "skills": [],
+    "strengths": [],
+    "weaknesses": []
+  },
+  "cvEmbedding": [],
+  "uploadedAt": {
+    "$date": "2026-01-06T03:07:58.276Z"
+  },
+  "updatedAt": {
+    "$date": "2026-01-06T03:08:15.429Z"
+  },
+  "createdAt": {
+    "$date": "2026-01-06T03:07:58.278Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "695c7c9f8367383b2441069e"
+  },
+  "userId": {
+    "$oid": "695c7b1e8367383b2441060c"
+  },
+  "cvName": "Triệu Đình Viết",
+  "cvFilePath": "resume/cv_695c7b1e8367383b2441060c_1767668895421.pdf",
+  "cvText": null,
+  "isActive": false,
+  "isDefault": false,
+  "cvAnalysis": {
+    "skills": [],
+    "strengths": [],
+    "weaknesses": []
+  },
+  "cvEmbedding": [],
+  "uploadedAt": {
+    "$date": "2026-01-06T03:08:15.431Z"
+  },
+  "updatedAt": {
+    "$date": "2026-01-06T03:08:58.200Z"
+  },
+  "createdAt": {
+    "$date": "2026-01-06T03:08:15.432Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "695c7cca8367383b24410737"
+  },
+  "userId": {
+    "$oid": "695c7b1e8367383b2441060c"
+  },
+  "cvName": "Triệu Đình Viết",
+  "cvFilePath": "resume/cv_695c7b1e8367383b2441060c_1767668938195.pdf",
+  "cvText": null,
+  "isActive": true,
+  "isDefault": true,
+  "cvAnalysis": {
+    "skills": [],
+    "strengths": [],
+    "weaknesses": []
+  },
+  "cvEmbedding": [],
+  "uploadedAt": {
+    "$date": "2026-01-06T03:08:58.202Z"
+  },
+  "updatedAt": {
+    "$date": "2026-01-06T03:08:58.202Z"
+  },
+  "createdAt": {
+    "$date": "2026-01-06T03:08:58.202Z"
+  },
+  "__v": 0
+}]

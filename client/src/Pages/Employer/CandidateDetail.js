@@ -15,6 +15,9 @@ export const CandidateDetail = () => {
     const [status, setStatus] = useState('active');
     const [showCVModal, setShowCVModal] = useState(false);
     const [cvSections, setCvSections] = useState(null);
+    const [candidateCVs, setCandidateCVs] = useState([]); // CV files uploaded
+    const [cvViewMode, setCvViewMode] = useState('template'); // 'template' or 'uploaded'
+    const [selectedCVFile, setSelectedCVFile] = useState(null);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -75,6 +78,44 @@ export const CandidateDetail = () => {
                         awards: Array.isArray(candidateData.cvSections.awards) ? candidateData.cvSections.awards : []
                     });
                 }
+                
+                // Fetch candidate's uploaded CVs
+                try {
+                    const token = localStorage.getItem('usertoken');
+                    if (token) {
+                        const cvResponse = await fetch(`${API_BASE_URL}/api/cv/candidate/${app.candidateID}`, {
+                            headers: {
+                                'Authorization': token.startsWith('Bearer ') ? token : `Bearer ${token}`
+                            }
+                        });
+                        if (cvResponse.ok) {
+                            const cvData = await cvResponse.json();
+                            setCandidateCVs(cvData.cvs || []);
+                        } else {
+                            console.warn('Failed to fetch candidate CVs:', cvResponse.status);
+                            // Fallback: use cvFilePath from User model if available
+                            if (candidateData.cvFilePath) {
+                                setCandidateCVs([{
+                                    _id: 'user-legacy-cv',
+                                    cvName: candidateData.cvTitle || 'CV',
+                                    cvFilePath: candidateData.cvFilePath,
+                                    isDefault: true
+                                }]);
+                            }
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error fetching candidate CVs:', error);
+                    // Fallback: use cvFilePath from User model if available
+                    if (candidateData.cvFilePath) {
+                        setCandidateCVs([{
+                            _id: 'user-legacy-cv',
+                            cvName: candidateData.cvTitle || 'CV',
+                            cvFilePath: candidateData.cvFilePath,
+                            isDefault: true
+                        }]);
+                    }
+                }
             } catch (error) {
                 console.error('Error fetching data:', error);
                 toast.error('Không thể tải dữ liệu');
@@ -120,21 +161,35 @@ export const CandidateDetail = () => {
 
     const handleViewCV = () => {
         setShowCVModal(true);
+        setCvViewMode('template'); // Default to template view
+        setSelectedCVFile(null);
     };
 
     const handleDownloadCV = () => {
-        if (!candidate?.cvFilePath) {
+        // Try to download from uploaded CVs first
+        const defaultCV = candidateCVs.find(cv => cv.isDefault) || candidateCVs[0];
+        const cvToDownload = defaultCV || (candidate?.cvFilePath ? {
+            cvFilePath: candidate.cvFilePath,
+            cvName: candidate.cvTitle || 'CV'
+        } : null);
+        
+        if (!cvToDownload?.cvFilePath) {
             toast.error('CV không có sẵn để tải xuống');
             return;
         }
         
-        const cvUrl = `${API_BASE_URL.replace('/api', '')}/uploads/${candidate.cvFilePath}`;
+        const cvUrl = `${API_BASE_URL.replace('/api', '')}/uploads/${cvToDownload.cvFilePath}`;
         const link = document.createElement('a');
         link.href = cvUrl;
-        link.download = candidate.cvTitle || 'CV.pdf';
+        link.download = cvToDownload.cvName || 'CV.pdf';
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+    };
+    
+    const handleViewCVFile = (cv) => {
+        setSelectedCVFile(cv);
+        setCvViewMode('uploaded');
     };
 
     const getStatusLabel = (status) => {
@@ -325,31 +380,68 @@ export const CandidateDetail = () => {
                 </div>
             </div>
 
-            {/* CV Template Modal */}
+            {/* CV Modal */}
             {showCVModal && candidate && (
                 <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4' onClick={() => setShowCVModal(false)}>
                     <div className='bg-gray-100 rounded-lg shadow-xl max-w-5xl w-full max-h-[90vh] overflow-y-auto' onClick={(e) => e.stopPropagation()}>
                         {/* Modal Header */}
                         <div className='sticky top-0 bg-white border-b border-gray-200 p-4 flex items-center justify-between z-10'>
                             <h2 className='text-xl font-bold text-gray-800'>CV - {candidate.userName}</h2>
-                            <button
-                                onClick={() => setShowCVModal(false)}
-                                className='text-gray-400 hover:text-gray-600 transition-colors'
-                            >
-                                <box-icon name='x' size='24px'></box-icon>
-                            </button>
+                            <div className='flex items-center gap-4'>
+                                {/* View Mode Toggle */}
+                                <div className='flex items-center gap-2 bg-gray-100 rounded-lg p-1'>
+                                    <button
+                                        onClick={() => {
+                                            setCvViewMode('template');
+                                            setSelectedCVFile(null);
+                                        }}
+                                        className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
+                                            cvViewMode === 'template' 
+                                                ? 'bg-white text-blue-600 shadow-sm' 
+                                                : 'text-gray-600 hover:text-gray-900'
+                                        }`}
+                                    >
+                                        CV Template
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            if (candidateCVs.length > 0) {
+                                                setCvViewMode('uploaded');
+                                                setSelectedCVFile(candidateCVs.find(cv => cv.isDefault) || candidateCVs[0]);
+                                            } else {
+                                                toast.info('Ứng viên chưa upload CV file');
+                                            }
+                                        }}
+                                        className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
+                                            cvViewMode === 'uploaded' 
+                                                ? 'bg-white text-blue-600 shadow-sm' 
+                                                : 'text-gray-600 hover:text-gray-900'
+                                        }`}
+                                    >
+                                        CV Upload ({candidateCVs.length})
+                                    </button>
+                                </div>
+                                <button
+                                    onClick={() => setShowCVModal(false)}
+                                    className='text-gray-400 hover:text-gray-600 transition-colors'
+                                >
+                                    <box-icon name='x' size='24px'></box-icon>
+                                </button>
+                            </div>
                         </div>
 
-                        {/* CV Template Content */}
+                        {/* CV Content */}
                         <div className='p-4'>
-                            <div 
-                                className="bg-white shadow-lg mx-auto"
-                                style={{ 
-                                    width: '210mm', 
-                                    minHeight: '297mm',
-                                    padding: '20mm'
-                                }}
-                            >
+                            {cvViewMode === 'template' ? (
+                                /* CV Template Content */
+                                <div 
+                                    className="bg-white shadow-lg mx-auto"
+                                    style={{ 
+                                        width: '210mm', 
+                                        minHeight: '297mm',
+                                        padding: '20mm'
+                                    }}
+                                >
                                 {/* Header Section */}
                                 <div className="flex items-center gap-6 mb-8 pb-6 border-b-2 border-gray-300">
                                     <div className="flex-shrink-0">
@@ -484,6 +576,82 @@ export const CandidateDetail = () => {
                                     </div>
                                 )}
                             </div>
+                            ) : (
+                                /* CV Uploaded Files View */
+                                <div className='bg-white rounded-lg p-6'>
+                                    {candidateCVs.length > 0 ? (
+                                        <div className='space-y-4'>
+                                            {/* CV Files List */}
+                                            <div className='mb-4'>
+                                                <h3 className='text-lg font-semibold text-gray-800 mb-3'>Danh sách CV đã upload:</h3>
+                                                <div className='space-y-2'>
+                                                    {candidateCVs.map((cv) => (
+                                                        <div
+                                                            key={cv._id}
+                                                            onClick={() => handleViewCVFile(cv)}
+                                                            className={`p-4 border rounded-lg cursor-pointer transition-colors ${
+                                                                selectedCVFile?._id === cv._id
+                                                                    ? 'border-blue-500 bg-blue-50'
+                                                                    : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                                                            }`}
+                                                        >
+                                                            <div className='flex items-center justify-between'>
+                                                                <div className='flex items-center gap-3'>
+                                                                    <box-icon name='file-pdf' size='24px' color='#DC2626'></box-icon>
+                                                                    <div>
+                                                                        <p className='font-medium text-gray-800'>{cv.cvName || 'CV'}</p>
+                                                                        <p className='text-sm text-gray-500'>
+                                                                            {cv.isDefault && <span className='text-blue-600'>Mặc định • </span>}
+                                                                            {cv.uploadedAt ? new Date(cv.uploadedAt).toLocaleDateString('vi-VN') : 'N/A'}
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                                {cv.isDefault && (
+                                                                    <span className='px-2 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded'>
+                                                                        Mặc định
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                            
+                                            {/* PDF Viewer */}
+                                            {selectedCVFile && (
+                                                <div className='border rounded-lg overflow-hidden'>
+                                                    <div className='bg-gray-50 px-4 py-2 border-b flex items-center justify-between'>
+                                                        <span className='text-sm font-medium text-gray-700'>
+                                                            {selectedCVFile.cvName || 'CV'}
+                                                        </span>
+                                                        <a
+                                                            href={`${API_BASE_URL.replace('/api', '')}/uploads/${selectedCVFile.cvFilePath}`}
+                                                            download={selectedCVFile.cvName || 'CV.pdf'}
+                                                            className='text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center gap-1'
+                                                        >
+                                                            <box-icon name='download' size='16px'></box-icon>
+                                                            Tải xuống
+                                                        </a>
+                                                    </div>
+                                                    <div className='bg-gray-100 p-4' style={{ minHeight: '600px' }}>
+                                                        <iframe
+                                                            src={`${API_BASE_URL.replace('/api', '')}/uploads/${selectedCVFile.cvFilePath}`}
+                                                            className='w-full h-full min-h-[600px] border-0'
+                                                            title={selectedCVFile.cvName || 'CV'}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    ) : (
+                                        <div className='text-center py-12'>
+                                            <box-icon name='file-pdf' size='48px' color='#9CA3AF'></box-icon>
+                                            <p className='mt-4 text-gray-600'>Ứng viên chưa upload CV file</p>
+                                            <p className='text-sm text-gray-500 mt-2'>Chỉ có thể xem CV template</p>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

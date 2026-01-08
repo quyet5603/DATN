@@ -18,11 +18,12 @@ import { ShortlistedCandidates } from './components/ShortlistedCandidates';
 import { ShortlistedDetails } from './components/ShortlistedDetails';
 import { ApplicationForm } from './Pages/Candidate/ApplicationForm';
 import {AllPostedJobs} from './components/AllPostedJobs'
-import { Dashboard } from './Pages/Dashboard';
+// import { Dashboard } from './Pages/Dashboard'; // Đã xóa file
 import { useContext, useEffect } from 'react';
 import { LoginContext } from './components/ContextProvider/Context';
 import { UpdateJob } from './Pages/Employer/UpdateJob';
 import { MyJobs } from './Pages/Candidate/MyJobs';
+import { Notifications } from './Pages/Candidate/Notifications';
 import { CVUpload } from './Pages/Candidate/CVUpload';
 import { RecommendedJobs } from './Pages/Candidate/RecommendedJobs';
 import { InterviewPractice } from './Pages/Candidate/InterviewPractice';
@@ -46,7 +47,7 @@ import { JobDetailAdmin } from './Pages/Admin/JobDetailAdmin';
 import { CompanyManagement } from './Pages/Admin/CompanyManagement';
 import { CompanyDetailAdmin } from './Pages/Admin/CompanyDetailAdmin';
 import Chatbot from './components/Chatbot';
-import { TestMatchDetails } from './Pages/TestMatchDetails';
+// import { TestMatchDetails } from './Pages/TestMatchDetails'; // Đã xóa file
 import { AIGuideModal } from './components/AIGuideModal';
 
 function App() {
@@ -85,6 +86,7 @@ function App() {
             <Route path='/all-posted-jobs' element={<AllPostedJobs />}/>
             <Route path='/update-job/:id' element={<UpdateJob />}/>
             <Route path='/my-jobs/' element={<MyJobs />}/>
+            <Route path='/notifications' element={<Notifications />}/>
             
             {/* AI Features Routes */}
             <Route path='/cv-upload/:id' element={<CVUpload />}/>
@@ -112,7 +114,7 @@ function App() {
             <Route path='/admin/companies/detail/:id' element={<CompanyDetailAdmin />}/>
             
             {/* Test Routes - Chỉ dùng để test component */}
-            <Route path='/test-match-details' element={<TestMatchDetails />}/>
+            {/* <Route path='/test-match-details' element={<TestMatchDetails />}/> */} {/* Đã xóa file */}
               
           </Route>
           

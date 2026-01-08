@@ -1,0 +1,92 @@
+[{
+  "_id": {
+    "$oid": "695de2712862f76c6c0675e9"
+  },
+  "candidateID": {
+    "$oid": "695aa0562a6ab27203b88801"
+  },
+  "jobID": {
+    "$oid": "695aa2c0243d7acf90212820"
+  },
+  "sessionId": "80f1e05d-e1ac-4428-9723-982b8828326c",
+  "sessionType": "interview",
+  "status": "active",
+  "messages": [
+    {
+      "role": "assistant",
+      "content": "Xin chào Trần Kiên Quyết! Tôi là bot phỏng vấn được hỗ trợ bởi AI. Tôi sẽ hỏi bạn 8 câu hỏi về vị trí Lập trình viên Frontend React. Hãy bắt đầu thôi!",
+      "timestamp": {
+        "$date": "2026-01-07T04:34:57.312Z"
+      },
+      "_id": {
+        "$oid": "695de2712862f76c6c0675ea"
+      }
+    },
+    {
+      "role": "assistant",
+      "content": "Bạn quen thuộc với ReactJS gì?",
+      "timestamp": {
+        "$date": "2026-01-07T04:34:57.312Z"
+      },
+      "_id": {
+        "$oid": "695de2712862f76c6c0675eb"
+      }
+    }
+  ],
+  "summary": {
+    "feedback": [],
+    "strengths": [],
+    "weaknesses": [],
+    "recommendations": []
+  },
+  "createdAt": {
+    "$date": "2026-01-07T04:34:57.318Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "695de2d62862f76c6c0676cf"
+  },
+  "candidateID": {
+    "$oid": "695aa0562a6ab27203b88801"
+  },
+  "jobID": {
+    "$oid": "695aa2c0243d7acf90212820"
+  },
+  "sessionId": "dd0f2f66-6934-410b-a039-03aba63acb32",
+  "sessionType": "interview",
+  "status": "active",
+  "messages": [
+    {
+      "role": "assistant",
+      "content": "Xin chào Trần Kiên Quyết! Tôi là bot phỏng vấn được hỗ trợ bởi AI. Tôi sẽ hỏi bạn 7 câu hỏi về vị trí Lập trình viên Frontend React. Hãy bắt đầu thôi!",
+      "timestamp": {
+        "$date": "2026-01-07T04:36:38.312Z"
+      },
+      "_id": {
+        "$oid": "695de2d62862f76c6c0676d0"
+      }
+    },
+    {
+      "role": "assistant",
+      "content": "Bạn nghèm một lần giúp viên chính báo cho việc phát triển frontend tích cực với React? (Họa nguồn: Cảm nhân, Đánh giá)",
+      "timestamp": {
+        "$date": "2026-01-07T04:36:38.312Z"
+      },
+      "_id": {
+        "$oid": "695de2d62862f76c6c0676d1"
+      }
+    }
+  ],
+  "summary": {
+    "feedback": [],
+    "strengths": [],
+    "weaknesses": [],
+    "recommendations": []
+  },
+  "createdAt": {
+    "$date": "2026-01-07T04:36:38.314Z"
+  },
+  "__v": 0
+}]

@@ -119,17 +119,36 @@ export const EditUser = () => {
                 const formData = new FormData();
                 formData.append('avatar', selectedFile);
                 
-                const avatarResponse = await fetch(`${API_BASE_URL}/users/upload-avatar/${userId}`, {
-                    method: 'PUT',
+                // Remove /api from API_BASE_URL if present for this endpoint
+                const baseURL = API_BASE_URL.replace('/api', '').replace(/\/$/, '');
+                const uploadUrl = `${baseURL}/users/upload-avatar/${userId}`;
+                
+                console.log('Uploading avatar to:', uploadUrl);
+                
+                const avatarResponse = await fetch(uploadUrl, {
+                    method: 'POST',
                     headers: {
                         'Authorization': token.startsWith('Bearer') ? token : `Bearer ${token}`
+                        // Don't set Content-Type - browser will set it with boundary for FormData
                     },
                     body: formData
                 });
                 
                 if (!avatarResponse.ok) {
-                    toast.error('Lỗi khi upload avatar');
+                    const errorData = await avatarResponse.json().catch(() => ({ message: 'Unknown error' }));
+                    console.error('Avatar upload error:', {
+                        status: avatarResponse.status,
+                        statusText: avatarResponse.statusText,
+                        error: errorData
+                    });
+                    toast.error(errorData.message || 'Lỗi khi upload avatar');
                     return;
+                }
+                
+                // Update avatar preview with new avatar
+                const avatarData = await avatarResponse.json();
+                if (avatarData.avatar) {
+                    setAvatarPreview(`${baseURL}/uploads/${avatarData.avatar}`);
                 }
             }
             

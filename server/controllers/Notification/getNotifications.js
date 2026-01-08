@@ -5,7 +5,14 @@ import Notification from '../../models/Notification.js';
  */
 export const getCandidateNotifications = async (req, res) => {
     try {
-        const userId = req.user.id;
+        const userId = req.userId || req.user?.id;
+
+        if (!userId) {
+            return res.status(401).json({
+                success: false,
+                error: 'User not authenticated'
+            });
+        }
 
         const notifications = await Notification.find({ userId })
             .sort({ createdAt: -1 })
@@ -36,7 +43,14 @@ export const getCandidateNotifications = async (req, res) => {
  */
 export const getEmployerNotifications = async (req, res) => {
     try {
-        const userId = req.user.id;
+        const userId = req.userId || req.user?.id;
+
+        if (!userId) {
+            return res.status(401).json({
+                success: false,
+                error: 'User not authenticated'
+            });
+        }
 
         const notifications = await Notification.find({ userId })
             .sort({ createdAt: -1 })
@@ -68,7 +82,14 @@ export const getEmployerNotifications = async (req, res) => {
 export const markAsRead = async (req, res) => {
     try {
         const { id } = req.params;
-        const userId = req.user.id;
+        const userId = req.userId || req.user?.id;
+
+        if (!userId) {
+            return res.status(401).json({
+                success: false,
+                error: 'User not authenticated'
+            });
+        }
 
         const notification = await Notification.findOneAndUpdate(
             { _id: id, userId },
@@ -101,7 +122,14 @@ export const markAsRead = async (req, res) => {
  */
 export const markAllAsRead = async (req, res) => {
     try {
-        const userId = req.user.id;
+        const userId = req.userId || req.user?.id;
+
+        if (!userId) {
+            return res.status(401).json({
+                success: false,
+                error: 'User not authenticated'
+            });
+        }
 
         await Notification.updateMany(
             { userId, isRead: false },

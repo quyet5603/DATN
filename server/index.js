@@ -45,6 +45,7 @@ import aiRoutes from './routes/aiRoutes.js'
 import chatRoutes from './routes/chatRoutes.js'
 import dashboardRoutes from './routes/dashboardRoutes.js'
 import cvRoutes from './routes/cvRoutes.js'
+import notificationRoutes from './routes/notificationRoutes.js'
 
 // Use routes
 app.use("/jobs", jobRoutes);
@@ -56,6 +57,7 @@ app.use("/api/ai", aiRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/cv", cvRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 // Routes
 app.get("/", (req, res) => {

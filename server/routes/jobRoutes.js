@@ -6,13 +6,15 @@ import { requireAdmin, requireAdminOrOwner } from '../middleware/authorize.js';
 const router = express.Router();
 
 import {getJobs} from '../controllers/Job/getJobs.js';
+import {getEmployerJobs} from '../controllers/Job/getEmployerJobs.js';
 import {getJob } from '../controllers/Job/getJob.js';
 import {addJob} from '../controllers/Job/addJob.js';
 import { deleteJob } from '../controllers/Job/deleteJob.js';
 import { updateJob } from '../controllers/Job/updateJob.js';
 import { updateJobByCandidate } from '../controllers/Job/updateJobByCandidate.js';
 
-router.get('/all-jobs', getJobs); // Public - ai cũng có thể xem jobs
+router.get('/all-jobs', getJobs); // Public - ai cũng có thể xem jobs (cho candidate)
+router.get('/employer-jobs', authenticate, getEmployerJobs); // Chỉ employer xem jobs của mình
 router.post('/post-job', authenticate, addJob); // Employer có thể đăng job
 router.get('/current-job/:id', getJob); // Public
 

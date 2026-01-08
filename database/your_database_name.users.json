@@ -1,0 +1,374 @@
+[{
+  "_id": {
+    "$oid": "6954c33a1851d5b57decbf7c"
+  },
+  "userName": "Nông Thành Long",
+  "userEmail": "long@gmail.com",
+  "userPassword": "$2a$10$Z5RBLSh7u9kdWNy9pqrbaeymZaj6GHU884N6nFTRwZx07b4GhY.YK",
+  "gender": "Male",
+  "address": "Hà Nội",
+  "role": "candidate",
+  "isAssigned": false,
+  "applications": [],
+  "cvAnalysis": {
+    "skills_match": [],
+    "strengths": [],
+    "weaknesses": []
+  },
+  "cvSuggestions": [],
+  "cvEmbedding": [],
+  "resetPasswordCode": null,
+  "resetPasswordExpires": null,
+  "emailVerified": false,
+  "verificationCode": null,
+  "verificationExpires": null,
+  "__v": 1,
+  "cvSections": {
+    "awards": [],
+    "certificates": [],
+    "education": [],
+    "experience": [],
+    "introduction": "",
+    "languages": [],
+    "projects": [],
+    "skills": []
+  },
+  "status": "active",
+  "updatedAt": {
+    "$date": "2026-01-07T20:58:57.074Z"
+  },
+  "lastLogin": {
+    "$date": "2026-01-07T20:58:57.073Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69550b94144dbb61f7f138e9"
+  },
+  "userName": "Viettel",
+  "userEmail": "congtya@gmail.com",
+  "userPassword": "$2a$10$OP8WTVFh12blYpo0Ppw3Se2UWHXgiMZbz2OjJeNEhxOH4J7GEMf5e",
+  "gender": "Male",
+  "address": "Hà Nội",
+  "role": "employer",
+  "isAssigned": false,
+  "applications": [],
+  "cvAnalysis": {
+    "skills_match": [],
+    "strengths": [],
+    "weaknesses": []
+  },
+  "cvSuggestions": [],
+  "cvEmbedding": [],
+  "resetPasswordCode": null,
+  "resetPasswordExpires": null,
+  "emailVerified": false,
+  "verificationCode": "972170",
+  "verificationExpires": {
+    "$date": "2026-01-01T11:40:04.487Z"
+  },
+  "__v": 1,
+  "avatar": "avatars/69550b94144dbb61f7f138e9.jpg",
+  "companyDescription": "Viettel là tập đoàn công nghiệp - viễn thông quân đội, một trong những doanh nghiệp viễn thông hàng đầu Việt Nam, cung cấp các dịch vụ viễn thông, công nghệ thông tin và giải pháp số cho khách hàng trong nước và quốc tế.",
+  "companyIntroduction": "Viettel là tập đoàn công nghiệp - viễn thông quân đội, được thành lập năm 1989. Với hơn 30 năm phát triển, Viettel đã trở thành một trong những doanh nghiệp viễn thông hàng đầu Việt Nam và khu vực.\n\nTập đoàn Viettel hoạt động trong nhiều lĩnh vực:\n- Viễn thông di động và cố định\n- Công nghệ thông tin\n- Giải pháp số và chuyển đổi số\n- An ninh mạng\n- Công nghệ quốc phòng\n\nViettel hiện có mặt tại hơn 10 quốc gia với hơn 50,000 nhân viên, phục vụ hàng triệu khách hàng trên toàn thế giới. Tập đoàn cam kết mang đến những giải pháp công nghệ tiên tiến, góp phần xây dựng một xã hội số phát triển.",
+  "companyLocations": "Hà Nội",
+  "companySize": "50,000+",
+  "companyTitle": "Viettel - Tập đoàn Công nghiệp - Viễn thông Quân đội",
+  "companyType": "Tập đoàn Nhà nước",
+  "country": "Việt Nam",
+  "establishedYear": "1989",
+  "industry": "Viễn thông, Công nghệ thông tin, Giải pháp số",
+  "website": "https://viettel.com.vn",
+  "workingHours": "Thứ 2 - Thứ 6 (8:00 - 17:30)",
+  "cvSections": {
+    "awards": [],
+    "certificates": [],
+    "education": [],
+    "experience": [],
+    "introduction": "",
+    "languages": [],
+    "projects": [],
+    "skills": []
+  },
+  "lastLogin": {
+    "$date": "2026-01-07T21:07:46.813Z"
+  },
+  "status": "active",
+  "updatedAt": {
+    "$date": "2026-01-07T21:07:46.818Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "695aa0562a6ab27203b88801"
+  },
+  "userName": "Trần Kiên Quyết",
+  "userEmail": "quyet@gmail.com",
+  "userPassword": "$2a$10$puXF0ZEXuL01ubPnCY66Gu70K7uqbHTcn1g.k259Vo.KVQzOX3awi",
+  "gender": "Nam",
+  "address": "Hà Nội",
+  "role": "candidate",
+  "isAssigned": false,
+  "applications": [
+    {
+      "status": "active",
+      "_id": {
+        "$oid": "695aa345243d7acf9021285b"
+      }
+    },
+    {
+      "status": "active",
+      "_id": {
+        "$oid": "695aa813046faeab05fe8f23"
+      }
+    },
+    {
+      "status": "active",
+      "_id": {
+        "$oid": "695aaa06b321085cb3f8ffb2"
+      }
+    },
+    {
+      "status": "active",
+      "_id": {
+        "$oid": "695aaa9a0f7508e250489492"
+      }
+    },
+    {
+      "status": "active",
+      "_id": {
+        "$oid": "695aabcbab7b657d3019e8a6"
+      }
+    },
+    {
+      "status": "active",
+      "_id": {
+        "$oid": "695aacde3c2cebb6ba7d1acb"
+      }
+    },
+    {
+      "status": "active",
+      "_id": {
+        "$oid": "695aad5d66721adf7d137c19"
+      }
+    },
+    {
+      "status": "active",
+      "_id": {
+        "$oid": "695aad6e66721adf7d137c63"
+      }
+    },
+    {
+      "status": "active",
+      "_id": {
+        "$oid": "695aae6dc5a8c03df67e1e5d"
+      }
+    },
+    {
+      "status": "active",
+      "_id": {
+        "$oid": "695aba573f4155d8461413a6"
+      }
+    },
+    {
+      "status": "active",
+      "_id": {
+        "$oid": "695e85585bc34c7108da3e49"
+      }
+    }
+  ],
+  "cvAnalysis": {
+    "skills_match": [],
+    "strengths": [],
+    "weaknesses": []
+  },
+  "cvSuggestions": [],
+  "cvEmbedding": [],
+  "resetPasswordCode": null,
+  "resetPasswordExpires": null,
+  "emailVerified": true,
+  "verificationCode": null,
+  "verificationExpires": null,
+  "__v": 0,
+  "cvFilePath": "resume/cv_695aa0562a6ab27203b88801_1767553364599.pdf",
+  "cvText": "NGUY ỄN VĂN A  \nFrontend Developer  \nEmail: nguyenvana@test.com | Phone: +84 123 456 789 | Hà N ội, Việt Nam  \n \n─────────────────────────────────────────────────────\n────  \n \nTÓM T ẮT \nFrontend Developer v ới 3 năm kinh nghi ệm phát tri ển ứng dụng web s ử dụng React, \nJavaScript, HTML/CSS.  \nĐã tham gia phát tri ển 5+ d ự án lớn, tăng hi ệu suất tải trang lên 40%.  \nCó kh ả năng làm vi ệc nhóm, tư duy sáng t ạo và gi ải quy ết vấn đề tốt.  \nMong mu ốn đóng góp cho đ ội ngũ phát tri ển sản phẩm công ngh ệ cao. \n \n─────────────────────────────────────────────────────\n────  \n \nKỸ NĂNG  \nReact, JavaScript, TypeScript, HTML5, CSS3, Node.js, Git, RESTful API,  \nResponsive Design, UI/UX Design, Redux, React Hooks, Tailwind CSS  \n \n─────────────────────────────────────────────────────\n────  \n \nKINH NGHI ỆM LÀM VI ỆC \n \nCông ty ABC / Frontend Developer / Hà N ội \nTháng 6 2021 - Hiện tại \n \n• Phát tri ển và b ảo trì ứng dụng web s ử dụng React và TypeScript  \n• Tối ưu hóa hi ệu suất, giảm thời gian t ải trang t ừ 5s xu ống 2s  \n• Làm vi ệc với team 5 ngư ời, thực hiện code review và mentoring junior developers  \n• Xây d ựng component library tái s ử dụng, gi ảm thời gian phát tri ển 30%  \n• Tích h ợp API v ới backend, x ử lý state management v ới Redux  \n \nCông ty XYZ / Junior Developer / TP.HCM  \nTháng 1 2020 - Tháng 5 2021  \n \n• Phát tri ển giao di ện ngư ời dùng v ới HTML, CSS, JavaScript  \n• Hỗ trợ debug và fix bugs trong các d ự án hi ện có \n• Tham gia phát tri ển landing pages và responsive websites  \n• Học hỏi và áp d ụng các best practices trong phát tri ển web  \n \n─────────────────────────────────────────────────────\n────  \n \nHỌC VẤN \n \nĐại học Bách Khoa Hà N ội / Cử nhân Công ngh ệ Thông tin / Hà N ội \nTháng 9 2016 - Tháng 6 2020  \n \n• Điểm trung bình: 3.5/4.0  \n• Chuyên ngành: Phát tri ển phần mềm \n• Đồ án tốt nghi ệp: Xây d ựng hệ thống qu ản lý bán hàng online v ới React và Node.js  \n \n─────────────────────────────────────────────────────\n────  \n \nKHÓA H ỌC & CH ỨNG CH Ỉ \n \nReact - The Complete Guide / Udemy  \nTháng 3 2021 - Tháng 5 2021  \n \n• Hoàn thành khóa h ọc 50+ gi ờ về React, Redux, React Hooks  \n• Xây d ựng 3 d ự án th ực tế trong khóa h ọc \n \nJavaScript Algorithms and Data Structures / freeCodeCamp  \nTháng 1 2020 - Tháng 2 2020  \n \n• Chứng ch ỉ hoàn thành khóa h ọc về algorithms và data structures  \n \n─────────────────────────────────────────────────────\n────  \n \nNGÔN NG Ữ \n \nTiếng Vi ệt / Bản ngữ \nTiếng Anh / Thành th ạo (TOEIC 850)  \n \n─────────────────────────────────────────────────────\n────  \n \nLIÊN K ẾT \n \nGitHub: https://github.com/nguyenvana  \nLinkedIn: https://linkedin.com/in/nguyenvana  \nPortfolio: https://nguyenvana.dev  \n \n─────────────────────────────────────────────────────\n────  \n \nSỞ THÍCH  \n \nĐọc sách công ngh ệ, Tham gia hackathon, Chơi c ầu lông, Đóng góp cho open source \nprojects",
+  "avatar": "avatars/695aa0562a6ab27203b88801.jpg",
+  "dateOfBirth": "2003-05-06",
+  "personalLink": "https://github.com/quyetcon5603",
+  "phoneNumber": "0823661012",
+  "position": "Frontend Developer",
+  "cvSections": {
+    "introduction": "Tôi là một Lập trình viên Frontend với hơn 3 năm kinh nghiệm trong việc phát triển các ứng dụng web hiện đại sử dụng React, JavaScript và các công nghệ liên quan. Tôi có niềm đam mê với việc tạo ra các giao diện người dùng đẹp mắt, trải nghiệm người dùng tốt và code sạch, dễ bảo trì.\n\nTrong quá trình làm việc, tôi đã tham gia vào nhiều dự án từ nhỏ đến lớn, từ việc xây dựng landing page đến các ứng dụng web phức tạp với hàng nghìn người dùng. Tôi luôn cố gắng học hỏi và cập nhật các công nghệ mới nhất để đảm bảo code của mình luôn hiện đại và hiệu quả.",
+    "education": [
+      {
+        "school": "Học viện công nghệ Bưu chính viễn thông",
+        "major": "Công nghệ thông tin",
+        "isCurrent": true,
+        "from": "2021",
+        "to": "2026",
+        "_id": {
+          "$oid": "695e9eea1f1b85960d8e91bb"
+        }
+      }
+    ],
+    "experience": [
+      {
+        "company": "FPT Software",
+        "position": "Frontend Developer",
+        "isCurrent": false,
+        "from": "07/2022",
+        "to": "07/2023",
+        "description": "- Phát triển và bảo trì các ứng dụng web sử dụng React, TypeScript, Redux\n- Làm việc với team Backend để tích hợp API RESTful\n- Tối ưu hóa hiệu suất ứng dụng, giảm thời gian load từ 5s xuống 2s\n- Code review và mentoring cho junior developers\n- Tham gia vào quy trình Agile/Scrum",
+        "projects": "- Dự án E-commerce Platform: Xây dựng hệ thống quản lý đơn hàng với 10,000+ đơn/ngày\n- Dự án Dashboard Analytics: Tạo dashboard real-time với Chart.js và WebSocket\n- Dự án Mobile App: Phát triển ứng dụng React Native cho iOS và Android",
+        "_id": {
+          "$oid": "695e9eea1f1b85960d8e91ba"
+        }
+      }
+    ],
+    "skills": [
+      {
+        "skill": "React",
+        "experience": "1-2 năm",
+        "_id": {
+          "$oid": "695e9eea1f1b85960d8e91b8"
+        }
+      },
+      {
+        "skill": "Python",
+        "experience": "1-2 năm",
+        "_id": {
+          "$oid": "695e9eea1f1b85960d8e91b9"
+        }
+      }
+    ],
+    "languages": [
+      {
+        "language": "Tiếng Anh",
+        "level": "Trung cấp",
+        "_id": {
+          "$oid": "695e9eea1f1b85960d8e91b7"
+        }
+      }
+    ],
+    "projects": [
+      {
+        "name": "E-commerce Platform",
+        "isCurrent": false,
+        "startMonth": "01",
+        "startYear": "2023",
+        "endMonth": "06",
+        "endYear": "2023",
+        "description": "Xây dựng nền tảng thương mại điện tử với các tính năng:\n- Quản lý sản phẩm và danh mục\n- Giỏ hàng và thanh toán online\n- Hệ thống đánh giá và review\n- Dashboard quản trị cho admin\n\nCông nghệ sử dụng: React, Node.js, MongoDB, Stripe API",
+        "link": "https://ecommerce-demo.com",
+        "_id": {
+          "$oid": "695e9eea1f1b85960d8e91b6"
+        }
+      }
+    ],
+    "certificates": [
+      {
+        "name": "AWS Certified Solutions Architect",
+        "organization": "Amazon Web Services",
+        "year": "2024",
+        "_id": {
+          "$oid": "695e9eea1f1b85960d8e91b5"
+        }
+      }
+    ],
+    "awards": [
+      {
+        "name": "Nhân viên xuất sắc năm 2023",
+        "organization": "FPT Software",
+        "year": "2023",
+        "description": "Được công nhận vì đóng góp xuất sắc trong dự án E-commerce Platform và mentoring cho junior developers.",
+        "_id": {
+          "$oid": "695e9eea1f1b85960d8e91b4"
+        }
+      }
+    ]
+  }
+},
+{
+  "_id": {
+    "$oid": "695be754188dd3baa725eabe"
+  },
+  "userName": "Admin",
+  "userEmail": "admin@example.com",
+  "userPassword": "$2a$10$MJIX6.8vglM1rTIrSJcHZOortRr01oeR5caEDtrUenlXh9TcWfue2",
+  "gender": "other",
+  "address": "Admin Address",
+  "role": "admin",
+  "cvAnalysis": {
+    "skills_match": [],
+    "strengths": [],
+    "weaknesses": []
+  },
+  "cvSuggestions": [],
+  "cvEmbedding": [],
+  "resetPasswordCode": null,
+  "resetPasswordExpires": null,
+  "emailVerified": true,
+  "verificationCode": null,
+  "verificationExpires": null,
+  "applications": [],
+  "__v": 1,
+  "cvSections": {
+    "awards": [],
+    "certificates": [],
+    "education": [],
+    "experience": [],
+    "introduction": "",
+    "languages": [],
+    "projects": [],
+    "skills": []
+  },
+  "lastLogin": {
+    "$date": "2026-01-07T21:29:33.584Z"
+  },
+  "status": "active",
+  "updatedAt": {
+    "$date": "2026-01-07T21:29:33.586Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "695c7b1e8367383b2441060c"
+  },
+  "userName": "Triệu Đình Viết",
+  "userEmail": "viet@gmail.com",
+  "userPassword": "$2a$10$vSrv9N0RugRWgU0GmJdVQePV8XSL8.bzIUB3CjqUC04ew6Sa969Vu",
+  "gender": "Male",
+  "address": "Hà Nội",
+  "role": "candidate",
+  "isAssigned": false,
+  "applications": [],
+  "cvAnalysis": {
+    "skills_match": [],
+    "strengths": [],
+    "weaknesses": []
+  },
+  "cvSuggestions": [],
+  "cvEmbedding": [],
+  "resetPasswordCode": null,
+  "resetPasswordExpires": null,
+  "emailVerified": true,
+  "verificationCode": null,
+  "verificationExpires": null,
+  "__v": 1,
+  "cvFilePath": "resume/cv_695c7b1e8367383b2441060c_1767668938195.pdf",
+  "cvText": null,
+  "cvSections": {
+    "awards": [],
+    "certificates": [],
+    "education": [],
+    "experience": [],
+    "introduction": "",
+    "languages": [],
+    "projects": [],
+    "skills": []
+  },
+  "status": "active",
+  "updatedAt": {
+    "$date": "2026-01-07T19:18:00.800Z"
+  }
+}]

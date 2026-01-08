@@ -250,3 +250,52 @@ export const getDefaultCV = async (req, res) => {
     }
 };
 
+/**
+ * Lấy danh sách CVs của candidate (cho employer xem)
+ * Employer có thể xem CVs của candidate thông qua application
+ */
+export const getCandidateCVs = async (req, res) => {
+    try {
+        const { candidateId } = req.params;
+        const userId = req.userId || req.user?._id; // Employer ID
+        
+        if (!userId) {
+            return res.status(401).json({ error: 'User not authenticated' });
+        }
+
+        // Verify user is employer or admin
+        const user = await User.findById(userId);
+        if (!user || (user.role !== 'employer' && user.role !== 'admin')) {
+            return res.status(403).json({ error: 'Only employers and admins can view candidate CVs' });
+        }
+
+        // Get CVs from CV collection
+        const cvs = await CV.find({ userId: candidateId, isActive: true })
+            .sort({ isDefault: -1, updatedAt: -1 });
+
+        // Also check if candidate has CV in User model (legacy)
+        const candidate = await User.findById(candidateId);
+        const uploadedCVs = [...cvs];
+        
+        if (candidate?.cvFilePath && !cvs.find(cv => cv.cvFilePath === candidate.cvFilePath)) {
+            uploadedCVs.push({
+                _id: 'user-legacy-cv',
+                userId: candidateId,
+                cvName: candidate.cvTitle || 'CV',
+                cvFilePath: candidate.cvFilePath,
+                isDefault: true,
+                isActive: true,
+                uploadedAt: candidate.updatedAt || new Date()
+            });
+        }
+
+        res.json({
+            success: true,
+            cvs: uploadedCVs
+        });
+    } catch (error) {
+        console.error('Error getting candidate CVs:', error);
+        res.status(500).json({ error: 'Failed to get candidate CVs', message: error.message });
+    }
+};
+

@@ -1,6 +1,7 @@
 import User from '../../models/User.js'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
+import { notifyNewUserRegistered } from '../Notification/createNotification.js'
 // TẠM THỜI BỎ IMPORT EMAIL SERVICE
 // import { sendVerificationEmail } from '../../services/emailService.js'
 
@@ -17,6 +18,11 @@ const register = async (req, res) => {
             applications
         } = req.body;
 
+        // Validate required fields
+        if (!userName || !userEmail || !userPassword) {
+            return res.status(400).json({ error: 'Vui lòng điền đầy đủ thông tin bắt buộc (Họ tên, Email, Mật khẩu)' });
+        }
+
         // Cho phép đăng ký bằng bất kỳ email nào (không có hạn chế domain)
         // Accepts any email format: gmail, yahoo, hotmail, company emails, etc.
         
@@ -29,7 +35,7 @@ const register = async (req, res) => {
         }) || await User.findOne({ userEmail: normalizedEmail });
         
         if (existingUser) {
-            return res.status(400).json({ error: 'User already exists with this email' });
+            return res.status(400).json({ error: 'Email này đã được sử dụng. Vui lòng chọn email khác.' });
         }
 
         const hashPassword = await bcrypt.hashSync(userPassword,10)
@@ -37,21 +43,34 @@ const register = async (req, res) => {
         // TẠM THỜI BỎ XÁC THỰC EMAIL - để test hệ thống
         // TODO: Bật lại xác thực email sau khi fix lỗi
         
+        // Set default values for required fields if not provided
+        const defaultGender = gender || 'Khác';
+        const defaultAddress = address || 'Chưa cập nhật';
+        const defaultRole = role || 'candidate';
+        
         const newUser = new User({ 
             userName, 
             userEmail: normalizedEmail, // Store normalized email
             userPassword: hashPassword, 
-            gender, 
-            address, 
-            role, 
-            isAssigned, 
-            applications,
+            gender: defaultGender, 
+            address: defaultAddress, 
+            role: defaultRole, 
+            isAssigned: isAssigned || false, 
+            applications: applications || [],
             emailVerified: true, // Tạm thời set true để bỏ qua xác thực
             verificationCode: null,
             verificationExpires: null
         });
         
         await newUser.save();
+
+        // Tạo thông báo cho admin khi có user mới đăng ký
+        try {
+            await notifyNewUserRegistered(newUser);
+        } catch (notifError) {
+            console.error('Error creating notification for admin:', notifError);
+            // Don't fail the request if notification fails
+        }
 
         // TẠM THỜI BỎ GỬI EMAIL XÁC THỰC
         // Gửi email xác thực
@@ -70,7 +89,12 @@ const register = async (req, res) => {
     }
     catch (error) {
         console.error('Error registering user:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        // Log detailed error for debugging
+        if (error.name === 'ValidationError') {
+            const errors = Object.values(error.errors).map(err => err.message);
+            return res.status(400).json({ error: 'Dữ liệu không hợp lệ: ' + errors.join(', ') });
+        }
+        res.status(500).json({ error: 'Lỗi server: ' + (error.message || 'Internal server error') });
     }
 }
 

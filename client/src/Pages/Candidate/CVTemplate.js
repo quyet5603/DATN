@@ -21,42 +21,93 @@ export const CVTemplate = () => {
     });
 
     useEffect(() => {
-        const token = localStorage.getItem('usertoken');
-        const userStr = localStorage.getItem('user');
-        
-        if (!token || !userStr) {
-            toast.error('Vui lòng đăng nhập');
-            navigate('/login');
-            return;
-        }
-
-        const userData = JSON.parse(userStr);
-        
-        // Load profile data
-        setProfileData({
-            userName: userData.userName || '',
-            position: userData.position || '',
-            userEmail: userData.userEmail || '',
-            phoneNumber: userData.phoneNumber || '',
-            dateOfBirth: userData.dateOfBirth || '',
-            gender: userData.gender || '',
-            address: userData.address || '',
-            personalLink: userData.personalLink || '',
-            avatar: userData.avatar || null
-        });
-
-        // Load CV sections (if stored in localStorage or from API)
-        // For now, we'll get from localStorage or set empty
-        const savedSections = localStorage.getItem('cvSections');
-        if (savedSections) {
-            try {
-                setCvSections(JSON.parse(savedSections));
-            } catch (e) {
-                console.error('Error parsing saved sections:', e);
+        const loadUserData = async () => {
+            const token = localStorage.getItem('usertoken');
+            const userStr = localStorage.getItem('user');
+            
+            if (!token || !userStr) {
+                toast.error('Vui lòng đăng nhập');
+                navigate('/login');
+                return;
             }
-        }
 
-        setLoading(false);
+            let userData = JSON.parse(userStr);
+            
+            // Fetch fresh user data from API to get latest cvSections from database
+            try {
+                const response = await fetch(`http://localhost:8080/users/user/${userData._id}`, {
+                    headers: {
+                        'Authorization': token.startsWith('Bearer') ? token : `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const freshUserData = await response.json();
+                    // Update localStorage with fresh data
+                    localStorage.setItem('user', JSON.stringify(freshUserData));
+                    userData = freshUserData;
+                }
+            } catch (error) {
+                console.error('Error fetching user data from API:', error);
+                // Continue with localStorage data if API fails
+            }
+            
+            // Load profile data
+            setProfileData({
+                userName: userData.userName || '',
+                position: userData.position || '',
+                userEmail: userData.userEmail || '',
+                phoneNumber: userData.phoneNumber || '',
+                dateOfBirth: userData.dateOfBirth || '',
+                gender: userData.gender || '',
+                address: userData.address || '',
+                personalLink: userData.personalLink || '',
+                avatar: userData.avatar || null
+            });
+
+            // Load CV sections - PRIORITY: from database (userData.cvSections)
+            if (userData.cvSections && Object.keys(userData.cvSections).length > 0) {
+                // Load from database
+                setCvSections({
+                    introduction: userData.cvSections.introduction || '',
+                    education: userData.cvSections.education || [],
+                    experience: userData.cvSections.experience || [],
+                    skills: userData.cvSections.skills || [],
+                    languages: userData.cvSections.languages || [],
+                    projects: userData.cvSections.projects || [],
+                    certificates: userData.cvSections.certificates || [],
+                    awards: userData.cvSections.awards || []
+                });
+                // Also sync to localStorage with user-specific key
+                localStorage.setItem(`cvSections_${userData._id}`, JSON.stringify(userData.cvSections));
+            } else {
+                // Fallback: Load from localStorage with user-specific key
+                const savedSections = localStorage.getItem(`cvSections_${userData._id}`);
+                if (savedSections) {
+                    try {
+                        setCvSections(JSON.parse(savedSections));
+                    } catch (e) {
+                        console.error('Error parsing saved sections:', e);
+                    }
+                } else {
+                    // If no data found, initialize with empty sections
+                    setCvSections({
+                        introduction: '',
+                        education: [],
+                        experience: [],
+                        skills: [],
+                        languages: [],
+                        projects: [],
+                        certificates: [],
+                        awards: []
+                    });
+                }
+            }
+
+            setLoading(false);
+        };
+
+        loadUserData();
     }, [navigate]);
 
     const handleDownload = async () => {

@@ -1,6 +1,6 @@
 import express from 'express';
 import multer from 'multer';
-import { getCVs, uploadCV, deleteCV, setDefaultCV, getDefaultCV } from '../controllers/CV/cvController.js';
+import { getCVs, uploadCV, deleteCV, setDefaultCV, getDefaultCV, getCandidateCVs } from '../controllers/CV/cvController.js';
 import { getCVScore, updateCVScore, getAllCVScores, compareCVScores, analyzeScore } from '../controllers/CV/scoreCVController.js';
 import { analyzeAndScoreCV, analyzeAndScoreCVFromFile } from '../controllers/CV/analyzeScoreCV.js';
 import { authenticate } from '../middleware/VerifyToken.js';
@@ -28,6 +28,7 @@ router.post('/upload', authenticate, upload.single('cv'), uploadCV);
 router.delete('/delete/:cvId', authenticate, deleteCV);
 router.put('/set-default/:cvId', authenticate, setDefaultCV);
 router.get('/default', authenticate, getDefaultCV);
+router.get('/candidate/:candidateId', authenticate, getCandidateCVs); // Employer xem CVs của candidate
 
 // CV Analysis & Scoring Routes
 router.post('/analyze-score/:cvId', authenticate, analyzeAndScoreCV);

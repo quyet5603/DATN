@@ -1,5 +1,7 @@
 import Job from '../../models/Job.js'
+import User from '../../models/User.js'
 import uniqid from 'uniqid';
+import { notifyNewJobPosted } from '../Notification/createNotification.js';
 
 const addJob = async (req, res) => {
     const { 
@@ -54,6 +56,18 @@ const addJob = async (req, res) => {
 
     try {   
         await job.save();
+        
+        // Tạo thông báo cho admin khi có job mới được đăng
+        try {
+            const employer = await User.findById(employerId);
+            if (employer) {
+                await notifyNewJobPosted(job, employer);
+            }
+        } catch (notifError) {
+            console.error('Error creating notification for admin:', notifError);
+            // Don't fail the request if notification fails
+        }
+        
         res.status(201).json(job);
     } catch (error) {
         res.status(409).json({ message: error.message });

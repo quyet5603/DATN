@@ -1,0 +1,75 @@
+[{
+  "_id": {
+    "$oid": "695aa345243d7acf90212856"
+  },
+  "jobID": "695aa2c0243d7acf90212820",
+  "candidateID": "695aa0562a6ab27203b88801",
+  "applicationStatus": "shortlist",
+  "applicationForm": [],
+  "candidateFeedback": [],
+  "matchScore": 85,
+  "aiAnalysis": {
+    "strengths": [
+      "Họ vào ngôn ngữ React",
+      "Kinh nghiệm tốt trong phát triển Frontend viên React",
+      "Giao tiếp với backend team"
+    ],
+    "weaknesses": [],
+    "recommendations": [
+      "Họ có thể bảo trì nề hiệu suất của phát triển Frontend",
+      "Công ty ABC và chuyên gia Yêu Cầu khám phá một kinh nghiệm tốt"
+    ]
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "695aaa9a0f7508e25048948d"
+  },
+  "jobID": "695aa2ed243d7acf90212827",
+  "candidateID": "695aa0562a6ab27203b88801",
+  "applicationStatus": "rejected",
+  "applicationForm": [],
+  "candidateFeedback": [],
+  "matchScore": 0,
+  "aiAnalysis": {
+    "strengths": [],
+    "weaknesses": [],
+    "recommendations": []
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "695aabcbab7b657d3019e8a1"
+  },
+  "jobID": "695aa313243d7acf9021282e",
+  "candidateID": "695aa0562a6ab27203b88801",
+  "applicationStatus": "active",
+  "applicationForm": [],
+  "candidateFeedback": [],
+  "matchScore": 0,
+  "aiAnalysis": {
+    "strengths": [],
+    "weaknesses": [],
+    "recommendations": []
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "695aacde3c2cebb6ba7d1ac6"
+  },
+  "jobID": "695aa331243d7acf90212835",
+  "candidateID": "695aa0562a6ab27203b88801",
+  "applicationStatus": "active",
+  "applicationForm": [],
+  "candidateFeedback": [],
+  "matchScore": 0,
+  "aiAnalysis": {
+    "strengths": [],
+    "weaknesses": [],
+    "recommendations": []
+  },
+  "__v": 0
+}]
