@@ -145,8 +145,8 @@ export const Navbar = () => {
 
     return (
         <div>
-            {/* Navbar với nền xanh */}
-            <div className='bg-green-600'>
+            {/* Navbar với nền xanh - Sticky để luôn hiển thị khi cuộn */}
+            <div className='bg-green-600 sticky top-0 z-50 shadow-md'>
                 <div className='max-w-screen container mx-auto xl:px-24 px-4'>
                     <nav className='flex items-center py-4 relative'>
                 {/* LOGO - Bên trái */}
@@ -367,10 +367,19 @@ export const Navbar = () => {
                                 </div>
                             </div>
                             :
-                            <div className='text-base font-medium space-x-4 hidden md:flex bg-green-700 px-4 py-2 rounded'>
-                                <Link to="/login" className='text-white hover:text-green-100 transition-colors'>Đăng nhập</Link>
-                                <span className='text-white'>/</span>
-                                <Link to="/signup" className='text-white hover:text-green-100 transition-colors'>Đăng ký</Link>
+                            <div className='hidden md:flex items-center gap-3'>
+                                <Link 
+                                    to="/login" 
+                                    className='px-4 py-2 rounded-full bg-amber-50 text-gray-900 font-semibold hover:bg-amber-100 transition-colors whitespace-nowrap'
+                                >
+                                    Đăng nhập
+                                </Link>
+                                <Link 
+                                    to="/signup" 
+                                    className='px-4 py-2 rounded-full bg-white text-green-600 font-semibold hover:bg-gray-50 transition-colors whitespace-nowrap'
+                                >
+                                    Đăng ký
+                                </Link>
                             </div>
                     }
                 </div>
@@ -519,7 +528,22 @@ export const Navbar = () => {
                                     </button>
                                 </div>
                                 :
-                                <li onClick={() => setIsMenuOpen(!isMenuOpen)} className='mt-2'><Link to="/login" className='py-2 px-4 text-white block border border-white rounded-md hover:bg-green-700 transition-colors'>Đăng nhập</Link></li>
+                                <div className='mt-3 space-y-2'>
+                                    <Link 
+                                        to="/login" 
+                                        onClick={() => setIsMenuOpen(!isMenuOpen)}
+                                        className='block w-full py-2 px-4 rounded-full bg-amber-50 text-gray-900 font-semibold text-center hover:bg-amber-100 transition-colors'
+                                    >
+                                        Đăng nhập
+                                    </Link>
+                                    <Link 
+                                        to="/signup" 
+                                        onClick={() => setIsMenuOpen(!isMenuOpen)}
+                                        className='block w-full py-2 px-4 rounded-full bg-white text-green-600 font-semibold text-center hover:bg-gray-50 transition-colors'
+                                    >
+                                        Đăng ký
+                                    </Link>
+                                </div>
                         }
                     </div>
                 </ul>

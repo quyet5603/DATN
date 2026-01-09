@@ -55,12 +55,16 @@ export const MyJobs = () => {
                                 jobResponse = await fetch(`${API_BASE_URL}/jobs/current-job/${app.jobID}`);
                             } catch (fetchError) {
                                 // Fetch failed (network error, etc.), im lặng bỏ qua
+                                console.debug(`[MyJobs] Network error fetching job ${app.jobID}:`, fetchError.message);
                                 return null;
                             }
                             
                             // Kiểm tra nếu job không tồn tại (404) hoặc có lỗi
                             if (!jobResponse || !jobResponse.ok) {
-                                // Job đã bị xóa hoặc không tồn tại, im lặng bỏ qua
+                                // Job đã bị xóa hoặc không tồn tại, im lặng bỏ qua (không log 404)
+                                if (jobResponse?.status !== 404) {
+                                    console.warn(`[MyJobs] Error fetching job ${app.jobID}:`, jobResponse?.status);
+                                }
                                 return null; // Trả về null để lọc bỏ sau
                             }
                             

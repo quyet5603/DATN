@@ -930,7 +930,7 @@ export const CVManager = () => {
                         to="/cv/template"
                         className="inline-block bg-red-600 text-white px-8 py-4 rounded-lg hover:bg-red-700 transition-colors font-semibold text-lg"
                         >
-                        View and Download CV
+                        Xem và Tải xuống CV
                         </Link>
                     </div>
 

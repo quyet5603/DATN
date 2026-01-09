@@ -44,10 +44,20 @@ const Chatbot = () => {
     setIsLoading(true);
 
     try {
+      // Lấy token từ localStorage nếu có (user đã đăng nhập)
+      const token = localStorage.getItem('usertoken');
+      const headers = {};
+      if (token) {
+        headers.Authorization = token.startsWith('Bearer ') ? token : `Bearer ${token}`;
+      }
+
       const response = await axios.post(
         `${API_BASE_URL}/api/chat`,
         {
           message: input
+        },
+        {
+          headers
         }
       );
 

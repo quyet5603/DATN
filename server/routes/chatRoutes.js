@@ -4,12 +4,13 @@ import { sendMessage } from '../controllers/Chat/sendMessage.js';
 import { endInterviewSession } from '../controllers/Chat/endInterview.js';
 import { chat, chatStream, checkOllamaHealth } from '../controllers/Chat/chatController.js';
 import { authenticate } from '../middleware/VerifyToken.js';
+import { optionalAuthenticate } from '../middleware/optionalAuth.js';
 
 const router = express.Router();
 
-// General chat endpoints (không cần authenticate)
-router.post('/', chat);
-router.post('/stream', chatStream);
+// General chat endpoints (optional authentication - nếu có token sẽ lấy user context)
+router.post('/', optionalAuthenticate, chat);
+router.post('/stream', optionalAuthenticate, chatStream);
 router.get('/health', checkOllamaHealth);
 
 // Interview endpoints

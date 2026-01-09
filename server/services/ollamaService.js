@@ -1,4 +1,5 @@
 import axios from "axios";
+import userContextService from "./userContextService.js";
 
 const OLLAMA_HOST = process.env.OLLAMA_HOST || "http://127.0.0.1:8080";
 const MODEL = process.env.OLLAMA_MODEL || "phi3:mini";
@@ -11,21 +12,77 @@ class OllamaService {
   }
 
   /**
-   * Chat với Ollama (non-streaming)
+   * Detect language from message (simple detection)
    */
-  async chat(message, history = []) {
+  detectLanguage(message) {
+    const englishWords = /\b(the|is|are|what|where|when|how|why|can|will|would|should|this|that|these|those)\b/i;
+    const vietnameseChars = /[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]/i;
+    
+    if (vietnameseChars.test(message)) {
+      return 'vietnamese';
+    }
+    if (englishWords.test(message)) {
+      return 'english';
+    }
+    // Default to detecting by common patterns
+    if (message.match(/[a-zA-Z]{3,}/) && !message.match(/[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]/i)) {
+      return 'english';
+    }
+    return 'vietnamese'; // Default
+  }
+
+  /**
+   * Chat với Ollama (non-streaming)
+   * @param {string} message - Tin nhắn từ user
+   * @param {Array} history - Lịch sử chat (optional)
+   * @param {Object} userContext - Thông tin user context (optional)
+   */
+  async chat(message, history = [], userContext = null) {
     try {
       const recentHistory = history.slice(-5);
+      
+      // Detect language from user message
+      const detectedLanguage = this.detectLanguage(message);
+      const languageInstruction = detectedLanguage === 'english' 
+        ? 'CRITICAL: The user is asking in ENGLISH. You MUST respond in ENGLISH only. Do not use Vietnamese.'
+        : 'CRITICAL: The user is asking in VIETNAMESE. You MUST respond in VIETNAMESE only. Do not use English.';
+
+      // Tạo system prompt với user context nếu có
+      let systemPrompt = '';
+      if (userContext) {
+        const contextText = userContextService.formatContextForPrompt(userContext);
+        
+        systemPrompt = `You are an intelligent AI assistant for a job recruitment system. You can answer questions about:
+- User's personal information
+- CV and work experience
+- Job applications
+- Posted jobs (if employer)
+- Career advice, CV writing, interviews
+- Other system-related questions
+
+${languageInstruction}
+
+${contextText}
+
+Please respond in a friendly, helpful, and accurate manner based on the provided information. If information is not available, please state so clearly.\n\n`;
+      } else {
+        systemPrompt = `You are an intelligent AI assistant for a job recruitment system. You can answer questions about job searching, CV writing, interviews, and related topics.
+
+${languageInstruction}\n\n`;
+      }
 
       const context = recentHistory
         .map((msg) => `${msg.role}: ${msg.content}`)
         .join("\n");
 
-      const prompt = context
+      const prompt = systemPrompt + (context
         ? `${context}\nuser: ${message}\nassistant:`
-        : message;
+        : `user: ${message}\nassistant:`);
 
       console.log(`[Ollama] Sending request to ${this.baseURL}/api/generate`);
+      if (userContext) {
+        console.log(`[Ollama] User context included for role: ${userContext.user.role}`);
+      }
 
       const response = await axios.post(
         `${this.baseURL}/api/generate`,
@@ -55,16 +112,50 @@ class OllamaService {
 
   /**
    * Chat với streaming response
+   * @param {string} message - Tin nhắn từ user
+   * @param {Array} history - Lịch sử chat (optional)
+   * @param {Function} onChunk - Callback khi nhận được chunk
+   * @param {Object} userContext - Thông tin user context (optional)
    */
-  async chatStream(message, history = [], onChunk) {
+  async chatStream(message, history = [], onChunk, userContext = null) {
     try {
+      // Detect language from user message
+      const detectedLanguage = this.detectLanguage(message);
+      const languageInstruction = detectedLanguage === 'english' 
+        ? 'CRITICAL: The user is asking in ENGLISH. You MUST respond in ENGLISH only. Do not use Vietnamese.'
+        : 'CRITICAL: The user is asking in VIETNAMESE. You MUST respond in VIETNAMESE only. Do not use English.';
+
+      // Tạo system prompt với user context nếu có
+      let systemPrompt = '';
+      if (userContext) {
+        const contextText = userContextService.formatContextForPrompt(userContext);
+        
+        systemPrompt = `You are an intelligent AI assistant for a job recruitment system. You can answer questions about:
+- User's personal information
+- CV and work experience
+- Job applications
+- Posted jobs (if employer)
+- Career advice, CV writing, interviews
+- Other system-related questions
+
+${languageInstruction}
+
+${contextText}
+
+Please respond in a friendly, helpful, and accurate manner based on the provided information. If information is not available, please state so clearly.\n\n`;
+      } else {
+        systemPrompt = `You are an intelligent AI assistant for a job recruitment system. You can answer questions about job searching, CV writing, interviews, and related topics.
+
+${languageInstruction}\n\n`;
+      }
+
       const context = history
         .map((msg) => `${msg.role}: ${msg.content}`)
         .join("\n");
 
-      const prompt = context
+      const prompt = systemPrompt + (context
         ? `${context}\nuser: ${message}\nassistant:`
-        : message;
+        : `user: ${message}\nassistant:`);
 
       const response = await axios.post(
         `${this.baseURL}/api/generate`,
