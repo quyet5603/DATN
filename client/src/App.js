@@ -8,6 +8,7 @@ import { PostJob } from './Pages/Employer/PostJob';
 import { AllJobs } from './Pages/Employer/AllJobs';
 import { Login } from './components/Login/Login';
 import { Register } from './components/Login/Register';
+import { GoogleCallback } from './components/Login/GoogleCallback';
 // Đã tắt chức năng quên mật khẩu
 // import { ForgotPassword } from './components/Login/ForgotPassword';
 // import { ResetPassword } from './components/Login/ResetPassword';
@@ -70,6 +71,7 @@ function App() {
             <Route path='/employer/dashboard' element={<AnalyticsDashboard />}/>
             <Route path='/login' element={<Login />}/>
             <Route path='/signup' element={<Register />}/>
+            <Route path='/auth/google/callback' element={<GoogleCallback />}/>
             {/* Đã tắt chức năng quên mật khẩu */}
             {/* <Route path='/forgot-password' element={<ForgotPassword />}/> */}
             {/* <Route path='/reset-password' element={<ResetPassword />}/> */}

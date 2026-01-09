@@ -3,9 +3,11 @@ import dotenv from "dotenv";
 import connectDB from "./config/connectDB.js";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import session from "express-session";
 import path from "path";
 import { fileURLToPath } from "url";
 import fs from 'fs';
+import passport from './config/passport.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -21,8 +23,27 @@ connectDB();
 
 // Middleware
 app.use(express.json());
-app.use(cors());
-app.use(cookieParser())
+app.use(cors({
+    origin: process.env.CLIENT_URL || 'http://localhost:3000',
+    credentials: true
+}));
+app.use(cookieParser());
+
+// Session configuration for Passport
+app.use(session({
+    secret: process.env.SESSION_SECRET || process.env.JWT_SECRET || 'your-secret-key',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        secure: process.env.NODE_ENV === 'production',
+        httpOnly: true,
+        maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    }
+}));
+
+// Initialize Passport
+app.use(passport.initialize());
+app.use(passport.session());
 
 // Serve static files from uploads directory
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));

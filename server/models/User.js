@@ -12,7 +12,18 @@ const UserSchema = new mongoose.Schema({
     },
     userPassword: {
         type: String,
-        required: true
+        required: function() {
+            return !this.googleId; // Password không bắt buộc nếu đăng nhập bằng Google
+        }
+    },
+    googleId: {
+        type: String,
+        default: null
+    },
+    provider: {
+        type: String,
+        enum: ['local', 'google'],
+        default: 'local'
     },
     gender: {
         type: String,

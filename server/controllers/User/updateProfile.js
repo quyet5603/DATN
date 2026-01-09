@@ -39,6 +39,9 @@ export const updateProfile = async (req, res) => {
             });
         }
 
+        // Normalize email: trim whitespace and convert to lowercase
+        const normalizedEmail = userEmail.trim().toLowerCase();
+
         // Check if user exists
         const user = await User.findById(id);
         if (!user) {
@@ -48,9 +51,14 @@ export const updateProfile = async (req, res) => {
             });
         }
 
-        // Check if email is already taken by another user
-        if (userEmail !== user.userEmail) {
-            const existingUser = await User.findOne({ userEmail });
+        // Check if email is already taken by another user (case-insensitive)
+        if (normalizedEmail !== user.userEmail.toLowerCase()) {
+            const existingUser = await User.findOne({ 
+                $or: [
+                    { userEmail: { $regex: new RegExp(`^${normalizedEmail}$`, 'i') } },
+                    { userEmail: normalizedEmail }
+                ]
+            });
             if (existingUser && existingUser._id.toString() !== id) {
                 return res.status(400).json({
                     success: false,
@@ -62,7 +70,7 @@ export const updateProfile = async (req, res) => {
         // Build update object based on role
         const updateData = {
             userName,
-            userEmail
+            userEmail: normalizedEmail // Lưu email đã được normalize
         };
 
         // Add personal info fields (for candidate)

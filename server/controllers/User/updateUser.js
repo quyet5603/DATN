@@ -17,7 +17,10 @@ const updateUser = async (req, res) => {
         
         // Update các field nếu có
         if (userName !== undefined) user.userName = userName;
-        if (userEmail !== undefined) user.userEmail = userEmail;
+        if (userEmail !== undefined) {
+            // Normalize email: trim whitespace and convert to lowercase
+            user.userEmail = userEmail.trim().toLowerCase();
+        }
         if (status !== undefined) user.status = status;
         if (role !== undefined) user.role = role;
         if (userPassword !== undefined && userPassword.trim() !== '') {
