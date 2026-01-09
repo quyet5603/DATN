@@ -34,6 +34,7 @@ export const JobDetails = () => {
     const [job, setJob] = useState();
     const [applicants, setApplicants] = useState();
     const [applicationsCount, setApplicationsCount] = useState(0);
+    const [shortlistedCount, setShortlistedCount] = useState(0);
     const [hasCV, setHasCV] = useState(false);
     const [loadingCV, setLoadingCV] = useState(false);
     const [profileComplete, setProfileComplete] = useState(false);
@@ -64,6 +65,12 @@ export const JobDetails = () => {
             .then(data => {
                 const jobApplications = data.filter(app => app.jobID === id);
                 setApplicationsCount(jobApplications.length);
+                
+                // Đếm số lượng shortlisted
+                const shortlisted = jobApplications.filter(
+                    app => app.applicationStatus === 'shortlist'
+                );
+                setShortlistedCount(shortlisted.length);
             })
             .catch(error => {
                 console.error('Error fetching applications count:', error);
@@ -259,6 +266,18 @@ export const JobDetails = () => {
             return;
         }
 
+        // Kiểm tra job status
+        if (job && job.status === 'filled') {
+            toast.error('Công việc này đã đủ số lượng ứng viên');
+            return;
+        }
+
+        // Kiểm tra số lượng shortlisted
+        if (job && shortlistedCount >= job.quantity) {
+            toast.error('Công việc này đã đủ số lượng ứng viên');
+            return;
+        }
+
         // Kiểm tra CV file upload - BẮT BUỘC phải có CV trước khi ứng tuyển
         if (!hasCV) {
             toast.error('Vui lòng tải CV lên trước khi ứng tuyển. Vào phần "Hồ sơ cá nhân" để tải CV.');
@@ -394,16 +413,35 @@ export const JobDetails = () => {
 
                                 {/* Apply Button */}
                                 <div className='mb-8'>
+                                    {job && (job.status === 'filled' || shortlistedCount >= job.quantity) && (
+                                        <div className='mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg'>
+                                            <p className='text-yellow-800 font-semibold text-center'>
+                                                ⚠️ Công việc này đã đủ số lượng ứng viên
+                                            </p>
+                                        </div>
+                                    )}
                                     <button
                                         onClick={handleApplyClick}
-                                        disabled={loadingCV || loadingProfile || (loginData && loginData.role === 'candidate' && (!hasCV || !profileComplete))}
+                                        disabled={
+                                            loadingCV || 
+                                            loadingProfile || 
+                                            (job && (job.status === 'filled' || shortlistedCount >= job.quantity)) ||
+                                            (loginData && loginData.role === 'candidate' && (!hasCV || !profileComplete))
+                                        }
                                         className={`w-full py-4 px-6 rounded-lg text-lg font-semibold transition-all ${
-                                            loadingCV || loadingProfile || (loginData && loginData.role === 'candidate' && (!hasCV || !profileComplete))
+                                            loadingCV || 
+                                            loadingProfile || 
+                                            (job && (job.status === 'filled' || shortlistedCount >= job.quantity)) ||
+                                            (loginData && loginData.role === 'candidate' && (!hasCV || !profileComplete))
                                                 ? 'bg-gray-400 text-white cursor-not-allowed'
                                                 : 'bg-red-600 text-white hover:bg-red-700 shadow-lg hover:shadow-xl'
                                         }`}
                                     >
-                                        {(loadingCV || loadingProfile) ? 'Đang kiểm tra...' : 'Ứng tuyển'}
+                                        {(loadingCV || loadingProfile) 
+                                            ? 'Đang kiểm tra...' 
+                                            : (job && (job.status === 'filled' || shortlistedCount >= job.quantity))
+                                                ? 'Công việc đã đủ số lượng'
+                                                : 'Ứng tuyển'}
                                     </button>
                                     {loginData && loginData.role === 'candidate' && !loadingCV && !loadingProfile && (
                                         <div className='mt-4 text-center space-y-2'>

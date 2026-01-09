@@ -84,6 +84,11 @@ const JobSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: false // Tạm thời optional để không break dữ liệu cũ
+    },
+    status: {
+        type: String,
+        enum: ['open', 'closed', 'filled'],
+        default: 'open'
     }
 }, {
     timestamps: true // Tự động thêm createdAt và updatedAt

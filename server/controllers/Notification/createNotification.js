@@ -148,3 +148,24 @@ export const notifyCVUpdated = async (candidate, jobIds) => {
     }
 };
 
+/**
+ * Create notification when job is deleted (for candidate)
+ */
+export const notifyJobDeleted = async (application, job, candidate) => {
+    try {
+        await createNotification({
+            userId: candidate._id,
+            type: 'job_deleted',
+            title: 'Công việc đã bị xóa',
+            message: `Công việc "${job.jobTitle}" mà bạn đã ứng tuyển đã bị nhà tuyển dụng xóa. Đơn ứng tuyển của bạn đã bị từ chối.`,
+            jobId: job._id,
+            jobTitle: job.jobTitle,
+            applicationId: application._id,
+            link: `/my-jobs`
+        });
+    } catch (error) {
+        console.error('Error creating job deleted notification:', error);
+        throw error;
+    }
+};
+

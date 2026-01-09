@@ -101,6 +101,13 @@ export const ApplicationForm = () => {
             navigate('/cv/manager');
             return;
         }
+
+        // Kiểm tra job status
+        if (job && job.status === 'filled') {
+            toast.error('Công việc này đã đủ số lượng ứng viên');
+            navigate('/');
+            return;
+        }
         
         setHasSubmitted(true);
 
@@ -124,6 +131,18 @@ export const ApplicationForm = () => {
             const applicationResult = await applicationResponse.json();
             
             if (!applicationResponse.ok) {
+                // Nếu lỗi do job đã đủ số lượng, hiển thị thông báo rõ ràng
+                if (applicationResult.message && (
+                    applicationResult.message.includes('đủ số lượng') || 
+                    applicationResult.message.includes('filled')
+                )) {
+                    toast.error(applicationResult.message || 'Công việc này đã đủ số lượng ứng viên');
+                    setTimeout(() => {
+                        navigate('/');
+                    }, 2000);
+                    setHasSubmitted(false);
+                    return;
+                }
                 throw new Error(applicationResult.message || 'Lỗi khi gửi đơn ứng tuyển');
             }
 
@@ -198,7 +217,18 @@ export const ApplicationForm = () => {
                     </div>
                     
                     <div className='mt-6 text-center'>
-                        {loadingCV ? (
+                        {job && job.status === 'filled' ? (
+                            <div>
+                                <p className='text-red-600 mb-4 font-semibold text-lg'>⚠️ Công việc này đã đủ số lượng ứng viên</p>
+                                <p className='text-gray-600 mb-4'>Công việc này không còn nhận đơn ứng tuyển mới.</p>
+                                <Link 
+                                    to="/"
+                                    className='inline-block bg-blue-600 text-white text-sm font-medium py-2 px-6 rounded-md hover:bg-blue-700 transition-colors'
+                                >
+                                    ← Quay lại trang chủ
+                                </Link>
+                            </div>
+                        ) : loadingCV ? (
                             <div>
                                 <p className='text-gray-600 mb-4'>Đang kiểm tra CV...</p>
                             </div>

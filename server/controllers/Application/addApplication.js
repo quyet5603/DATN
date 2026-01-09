@@ -8,7 +8,34 @@ const addApplication = async (req, res) => {
     const { jobID, candidateID, applicationStatus, applicationForm, candidateFeedback } = req.body;
 
     try {
-        // Kiểm tra xem đã có application nào cho job và candidate này chưa
+        // 1. Kiểm tra job có tồn tại không
+        const job = await Job.findById(jobID);
+        if (!job) {
+            return res.status(404).json({ 
+                message: 'Không tìm thấy job' 
+            });
+        }
+
+        // 2. Kiểm tra job có còn mở không
+        if (job.status === 'filled') {
+            return res.status(400).json({ 
+                message: 'Công việc này đã đủ số lượng ứng viên' 
+            });
+        }
+
+        // 3. Kiểm tra số lượng shortlisted
+        const shortlistedCount = await Application.countDocuments({
+            jobID: jobID,
+            applicationStatus: 'shortlist'
+        });
+
+        if (shortlistedCount >= job.quantity) {
+            return res.status(400).json({ 
+                message: 'Công việc này đã đủ số lượng ứng viên' 
+            });
+        }
+
+        // 4. Kiểm tra xem đã có application nào cho job và candidate này chưa
         const existingApplication = await Application.findOne({
             jobID: jobID,
             candidateID: candidateID
@@ -43,7 +70,6 @@ const addApplication = async (req, res) => {
 
         // Tạo thông báo cho employer khi có ứng viên mới apply
         try {
-            const job = await Job.findById(jobID);
             const candidate = await User.findById(candidateID);
             
             if (job && candidate && job.employerId) {
