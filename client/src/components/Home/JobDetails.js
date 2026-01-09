@@ -272,12 +272,6 @@ export const JobDetails = () => {
             return;
         }
 
-        // Kiểm tra số lượng shortlisted
-        if (job && shortlistedCount >= job.quantity) {
-            toast.error('Công việc này đã đủ số lượng ứng viên');
-            return;
-        }
-
         // Kiểm tra CV file upload - BẮT BUỘC phải có CV trước khi ứng tuyển
         if (!hasCV) {
             toast.error('Vui lòng tải CV lên trước khi ứng tuyển. Vào phần "Hồ sơ cá nhân" để tải CV.');
@@ -413,7 +407,7 @@ export const JobDetails = () => {
 
                                 {/* Apply Button */}
                                 <div className='mb-8'>
-                                    {job && (job.status === 'filled' || shortlistedCount >= job.quantity) && (
+                                    {job && job.status === 'filled' && (
                                         <div className='mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg'>
                                             <p className='text-yellow-800 font-semibold text-center'>
                                                 ⚠️ Công việc này đã đủ số lượng ứng viên
@@ -425,13 +419,13 @@ export const JobDetails = () => {
                                         disabled={
                                             loadingCV || 
                                             loadingProfile || 
-                                            (job && (job.status === 'filled' || shortlistedCount >= job.quantity)) ||
+                                            (job && job.status === 'filled') ||
                                             (loginData && loginData.role === 'candidate' && (!hasCV || !profileComplete))
                                         }
                                         className={`w-full py-4 px-6 rounded-lg text-lg font-semibold transition-all ${
                                             loadingCV || 
                                             loadingProfile || 
-                                            (job && (job.status === 'filled' || shortlistedCount >= job.quantity)) ||
+                                            (job && job.status === 'filled') ||
                                             (loginData && loginData.role === 'candidate' && (!hasCV || !profileComplete))
                                                 ? 'bg-gray-400 text-white cursor-not-allowed'
                                                 : 'bg-red-600 text-white hover:bg-red-700 shadow-lg hover:shadow-xl'
@@ -439,7 +433,7 @@ export const JobDetails = () => {
                                     >
                                         {(loadingCV || loadingProfile) 
                                             ? 'Đang kiểm tra...' 
-                                            : (job && (job.status === 'filled' || shortlistedCount >= job.quantity))
+                                            : (job && job.status === 'filled')
                                                 ? 'Công việc đã đủ số lượng'
                                                 : 'Ứng tuyển'}
                                     </button>

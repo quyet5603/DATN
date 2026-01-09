@@ -23,19 +23,7 @@ const addApplication = async (req, res) => {
             });
         }
 
-        // 3. Kiểm tra số lượng shortlisted
-        const shortlistedCount = await Application.countDocuments({
-            jobID: jobID,
-            applicationStatus: 'shortlist'
-        });
-
-        if (shortlistedCount >= job.quantity) {
-            return res.status(400).json({ 
-                message: 'Công việc này đã đủ số lượng ứng viên' 
-            });
-        }
-
-        // 4. Kiểm tra xem đã có application nào cho job và candidate này chưa
+        // 3. Kiểm tra xem đã có application nào cho job và candidate này chưa
         const existingApplication = await Application.findOne({
             jobID: jobID,
             candidateID: candidateID
